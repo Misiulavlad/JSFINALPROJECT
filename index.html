@@ -4,115 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Cyber Universe</title>
+    <!-- Шрифты и стили -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- АНИМАЦИОННЫЕ БЛОБЫ -->
-<div class="blobs-container">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-</div>
-
-<!-- НАВИГАЦИЯ -->
-<nav class="navbar">
-    <div class="nav-logo" onclick="switchPage('search')">CYBER<span>SYS</span></div>
-    <div class="nav-center">
-        <button class="nav-btn active" onclick="switchPage('search')">ПОИСК</button>
-        <button class="nav-btn" onclick="switchPage('cinema')">КИНО</button>
-        <button class="nav-btn" onclick="switchPage('settings')">НАСТРОЙКИ</button>
+    <!-- АНИМАЦИОННЫЕ БЛОБЫ -->
+    <div class="blobs-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
     </div>
-    <button class="btn-auth" id="navAuthBtn">ВОЙТИ</button>
-</nav>
 
-<!-- МОДАЛКА АВТОРИЗАЦИИ -->
-<div class="modal-overlay" id="authModal">
-    <div class="auth-card">
-        <span class="close-modal" id="closeModal">&times;</span>
-        <div id="loginForm">
-            <h2 class="auth-title">ВХОД</h2>
-            <div class="error-msg" id="loginError"></div>
-            <div class="input-group"><label>Логин</label><input type="text" id="loginUser"></div>
-            <div class="input-group"><label>Пароль</label><input type="password" id="loginPass"></div>
-            <button class="btn-auth" style="width:100%" onclick="authAPI.login()">ВОЙТИ</button>
-            <div class="switch-form" onclick="ui.toggleForms()">Нет аккаунта? Регистрация</div>
+    <!-- НАВИГАЦИЯ -->
+    <nav class="navbar">
+        <div class="nav-logo" onclick="switchPage('search')">CYBER<span>SYS</span></div>
+        <div class="nav-center">
+            <button class="nav-btn active" onclick="switchPage('search')">ПОИСК</button>
+            <button class="nav-btn" onclick="switchPage('cinema')">КИНО</button>
+            <button class="nav-btn" onclick="switchPage('settings')">НАСТРОЙКИ</button>
         </div>
-        <div id="registerForm" style="display: none;">
-            <h2 class="auth-title">РЕГИСТРАЦИЯ</h2>
-            <div class="error-msg" id="regError"></div>
-            <div class="input-group"><label>Придумайте логин</label><input type="text" id="regUser"></div>
-            <div class="input-group"><label>Пароль</label><input type="password" id="regPass"></div>
-            <button class="btn-auth" style="width:100%" onclick="authAPI.register()">СОЗДАТЬ</button>
-            <div class="switch-form" onclick="ui.toggleForms()">Есть аккаунт? Войти</div>
-        </div>
-    </div>
-</div>
+        <!-- Кнопка меняется через JS (ui.updateAuthUI) -->
+        <button class="btn-auth" id="navAuthBtn">ЗАГРУЗКА...</button>
+    </nav>
 
-<!-- СТРАНИЦА 1: SEARCH SYSTEM -->
-<div class="page active" id="searchPage">
-    <div class="search-card">
-        <h1 style="color: var(--text-main); text-align: center; margin-bottom: 20px; font-family: 'Orbitron'; letter-spacing: 2px; text-transform: uppercase;">NEON CYBER SYSTEM</h1>
-        
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="SEARCH DATABASE..." id="globalSearch">
-        </div>
-        
-        <div class="video-wrap">
-            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1" title="Video" frameborder="0" allowfullscreen></iframe>
-        </div>
-        
-        <div class="status" id="statusInfo">SYSTEM: ONLINE | THEME: RED</div>
-        
-        <button class="btn-reset" onclick="authAPI.resetDB()">[ ADMIN: RESET DATABASE ]</button>
-    </div>
-</div>
+    <!-- МОДАЛКА АВТОРИЗАЦИИ -->
+    <div class="modal-overlay" id="authModal">
+        <div class="auth-card">
+            <span class="close-modal" id="closeModal">&times;</span>
+            
+            <!-- ФОРМА ВХОДА -->
+            <div id="loginForm">
+                <h2 class="auth-title">ВХОД</h2>
+                <div class="error-msg" id="loginError" style="display:none;"></div>
+                
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="loginUser" autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPass" autocomplete="current-password">
+                </div>
+                
+                <button class="btn-auth" style="width:100%" onclick="authAPI.login()">ВОЙТИ</button>
+                <div class="switch-form" onclick="ui.toggleForms()">Нет аккаунта? Регистрация</div>
+            </div>
 
-<!-- СТРАНИЦА 2: CINEMA -->
-<div class="page" id="cinemaPage">
-    <div class="movies-container">
-        <div class="movies-header">
-            <h1>КИБЕР-КАТАЛОГ ФИЛЬМОВ</h1>
-            <div class="status">ОБНАРУЖЕНО: 100 КИНООБЪЕКТОВ</div>
-        </div>
-        <div class="movies-grid" id="moviesGrid">
-            <!-- Фильмы будут сгенерированы через JavaScript -->
-        </div>
-    </div>
-</div>
-
-<!-- СТРАНИЦА 3: SETTINGS -->
-<div class="page" id="settingsPage">
-    <div class="settings-card">
-        <div class="settings-section">
-            <h2 class="settings-title">ВЫБОР ТЕМЫ</h2>
-            <p style="color: var(--text-main); opacity: 0.8; margin-bottom: 20px;">Выберите акцентный цвет для интерфейса. Черный фон останется неизменным.</p>
-            <div class="color-picker">
-                <div class="color-option color-red active" data-color="red" onclick="setTheme('red')"></div>
-                <div class="color-option color-blue" data-color="blue" onclick="setTheme('blue')"></div>
-                <div class="color-option color-green" data-color="green" onclick="setTheme('green')"></div>
-                <div class="color-option color-purple" data-color="purple" onclick="setTheme('purple')"></div>
-                <div class="color-option color-cyan" data-color="cyan" onclick="setTheme('cyan')"></div>
-                <div class="color-option color-orange" data-color="orange" onclick="setTheme('orange')"></div>
-                <div class="color-option color-pink" data-color="pink" onclick="setTheme('pink')"></div>
-                <div class="color-option color-yellow" data-color="yellow" onclick="setTheme('yellow')"></div>
+            <!-- ФОРМА РЕГИСТРАЦИИ -->
+            <div id="registerForm" style="display: none;">
+                <h2 class="auth-title">РЕГИСТРАЦИЯ</h2>
+                <div class="error-msg" id="regError" style="display:none;"></div>
+                
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="regUser" autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label>Придумайте пароль</label>
+                    <input type="password" id="regPass" autocomplete="new-password">
+                </div>
+                
+                <button class="btn-auth" style="width:100%" onclick="authAPI.register()">СОЗДАТЬ</button>
+                <div class="switch-form" onclick="ui.toggleForms()">Есть аккаунт? Войти</div>
             </div>
         </div>
-        
-        <div class="settings-section">
-            <h2 class="settings-title">ИНФОРМАЦИЯ О СИСТЕМЕ</h2>
-            <div class="status" style="text-align: left;">
-                <p>Текущая тема: <span id="currentTheme">Красная</span></p>
-                <p>Пользователь: <span id="currentUserInfo">Не авторизован</span></p>
-                <p>Зарегистрировано аккаунтов: <span id="userCount">0</span></p>
+    </div>
+
+    <!-- СТРАНИЦА 1: SEARCH SYSTEM -->
+    <div class="page active" id="searchPage">
+        <div class="search-card">
+            <h1 style="color: var(--text-main); text-align: center; margin-bottom: 20px; font-family: 'Orbitron'; letter-spacing: 2px;">NEON CYBER SYSTEM</h1>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="SEARCH DATABASE..." id="globalSearch">
+            </div>
+
+            <div class="video-wrap">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1&mute=1&autoplay=1&loop=1&playlist=dQw4w9WgXcQ" title="Video" frameborder="0" allowfullscreen></iframe>
+            </div>
+
+            <div class="status" id="statusInfo">SYSTEM: ONLINE | THEME: RED</div>
+            
+            <!-- Убрали resetDB, оставили просто кнопку для визуала или другую функцию -->
+            <button class="btn-reset" onclick="performSearch()">[ SCAN SECTOR ]</button>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА 2: CINEMA -->
+    <div class="page" id="cinemaPage">
+        <div class="movies-container">
+            <div class="movies-header">
+                <h1>КИБЕР-КАТАЛОГ ФИЛЬМОВ</h1>
+                <div class="status">ОБНАРУЖЕНО: 20 КИНООБЪЕКТОВ</div>
+            </div>
+            
+            <div class="movies-grid" id="moviesGrid">
+                <!-- Фильмы генерируются через main.js -->
             </div>
         </div>
-        
-        <button class="btn-auth" style="width: 100%; margin-top: 20px;" onclick="resetToDefault()">
-            СБРОСИТЬ НАСТРОЙКИ
-        </button>
     </div>
-</div>
-<script src="main.js"></script>
+
+    <!-- СТРАНИЦА 3: SETTINGS -->
+    <div class="page" id="settingsPage">
+        <div class="settings-card">
+            <div class="settings-section">
+                <h2 class="settings-title">ВЫБОР ТЕМЫ</h2>
+                <p style="color: var(--text-main); opacity: 0.8; margin-bottom: 20px;">Выберите акцентный цвет интерфейса.</p>
+                <div class="color-picker">
+                    <div class="color-option" data-color="red" style="background: #ff003c;" onclick="setTheme('red')"></div>
+                    <div class="color-option" data-color="blue" style="background: #0066ff;" onclick="setTheme('blue')"></div>
+                    <div class="color-option" data-color="green" style="background: #00cc66;" onclick="setTheme('green')"></div>
+                    <div class="color-option" data-color="purple" style="background: #9933ff;" onclick="setTheme('purple')"></div>
+                    <div class="color-option" data-color="cyan" style="background: #00cccc;" onclick="setTheme('cyan')"></div>
+                    <div class="color-option" data-color="orange" style="background: #ff6600;" onclick="setTheme('orange')"></div>
+                    <div class="color-option" data-color="pink" style="background: #ff3399;" onclick="setTheme('pink')"></div>
+                    <div class="color-option" data-color="yellow" style="background: #ffcc00;" onclick="setTheme('yellow')"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2 class="settings-title">ИНФОРМАЦИЯ О СИСТЕМЕ</h2>
+                <div class="status" style="text-align: left;">
+                    <p>Текущая тема: <span id="currentTheme">Красная</span></p>
+                    <p>Пользователь: <span id="currentUserInfo" style="color: var(--accent-color)">Не авторизован</span></p>
+                    <p>Статус сервера: <span id="userCount">ONLINE</span></p>
+                </div>
+            </div>
+
+            <button class="btn-auth" style="width: 100%; margin-top: 20px;" onclick="resetToDefault()">
+                СБРОСИТЬ НАСТРОЙКИ
+            </button>
+        </div>
+    </div>
+
+    <!-- ПОДКЛЮЧЕНИЕ JS (VITE) -->
+    <script type="module" src="./main.js"></script>
 </body>
 </html>
