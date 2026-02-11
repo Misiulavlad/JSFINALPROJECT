@@ -4,13 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Cyber Universe</title>
-    <!-- Шрифты и стили -->
+    <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <!-- 🔥 СКРИПТ МГНОВЕННОЙ ЗАГРУЗКИ ТЕМЫ 🔥 -->
+    <script>
+        (function() {
+            // Те же цвета, что и в main.js
+            const themes = {
+                red: { glow: '255,0,60', accent: '#ff003c' },
+                blue: { glow: '0,102,255', accent: '#0066ff' },
+                green: { glow: '0,204,102', accent: '#00cc66' },
+                purple: { glow: '153,51,255', accent: '#9933ff' },
+                cyan: { glow: '0,204,204', accent: '#00cccc' },
+                orange: { glow: '255,102,0', accent: '#ff6600' },
+                pink: { glow: '255,51,153', accent: '#ff3399' },
+                yellow: { glow: '255,204,0', accent: '#ffcc00' }
+            };
+
+            // 1. Берем сохраненную тему или ставим красную по умолчанию
+            const savedTheme = localStorage.getItem('theme') || 'red';
+            const theme = themes[savedTheme] || themes['red'];
+
+            // 2. Применяем CSS переменные СРАЗУ, до отрисовки страницы
+            const root = document.documentElement;
+            root.style.setProperty('--glow-color', theme.glow);
+            root.style.setProperty('--accent-color', theme.accent);
+            root.style.setProperty('--card-border', `rgba(${theme.glow},0.4)`);
+            root.style.setProperty('--blob-gradient', `radial-gradient(circle, rgba(${theme.glow},0.4) 0%, rgba(${theme.glow},0) 70%)`);
+        })();
+    </script>
 </head>
 <body>
 
-    <!-- АНИМАЦИОННЫЕ БЛОБЫ -->
+    <!-- ФОН (БЛОБЫ) -->
     <div class="blobs-container">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -18,99 +46,87 @@
 
     <!-- НАВИГАЦИЯ -->
     <nav class="navbar">
-        <div class="nav-logo" onclick="switchPage('search')">CYBER<span>SYS</span></div>
+        <div class="nav-logo" onclick="resetToMain()">CYBER<span>CINEMA</span></div>
         <div class="nav-center">
             <button class="nav-btn active" onclick="switchPage('search')">ПОИСК</button>
-            <button class="nav-btn" onclick="switchPage('cinema')">КИНО</button>
+            <button class="nav-btn" onclick="switchPage('cinema')">КАТАЛОГ</button>
             <button class="nav-btn" onclick="switchPage('settings')">НАСТРОЙКИ</button>
         </div>
-        <!-- Кнопка меняется через JS (ui.updateAuthUI) -->
         <button class="btn-auth" id="navAuthBtn">ЗАГРУЗКА...</button>
     </nav>
 
     <!-- МОДАЛКА АВТОРИЗАЦИИ -->
     <div class="modal-overlay" id="authModal">
         <div class="auth-card">
-            <span class="close-modal" id="closeModal">&times;</span>
+            <span class="close-modal" id="closeAuthModal">×</span>
             
-            <!-- ФОРМА ВХОДА -->
+            <!-- ВХОД -->
             <div id="loginForm">
                 <h2 class="auth-title">ВХОД</h2>
-                <div class="error-msg" id="loginError" style="display:none;"></div>
-                
+                <div class="error-msg" id="loginError"></div>
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="loginUser" autocomplete="username">
+                    <input type="email" id="loginUser">
                 </div>
                 <div class="input-group">
                     <label>Пароль</label>
-                    <input type="password" id="loginPass" autocomplete="current-password">
+                    <input type="password" id="loginPass">
                 </div>
-                
                 <button class="btn-auth" style="width:100%" onclick="authAPI.login()">ВОЙТИ</button>
                 <div class="switch-form" onclick="ui.toggleForms()">Нет аккаунта? Регистрация</div>
             </div>
 
-            <!-- ФОРМА РЕГИСТРАЦИИ -->
+            <!-- РЕГИСТРАЦИЯ -->
             <div id="registerForm" style="display: none;">
                 <h2 class="auth-title">РЕГИСТРАЦИЯ</h2>
-                <div class="error-msg" id="regError" style="display:none;"></div>
-                
+                <div class="error-msg" id="regError"></div>
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" id="regUser" autocomplete="username">
+                    <input type="email" id="regUser">
                 </div>
                 <div class="input-group">
-                    <label>Придумайте пароль</label>
-                    <input type="password" id="regPass" autocomplete="new-password">
+                    <label>Пароль</label>
+                    <input type="password" id="regPass">
                 </div>
-                
                 <button class="btn-auth" style="width:100%" onclick="authAPI.register()">СОЗДАТЬ</button>
                 <div class="switch-form" onclick="ui.toggleForms()">Есть аккаунт? Войти</div>
             </div>
         </div>
     </div>
 
-    <!-- СТРАНИЦА 1: SEARCH SYSTEM -->
+    <!-- СТРАНИЦА 1: ПОИСК (ГЛАВНАЯ) -->
     <div class="page active" id="searchPage">
         <div class="search-card">
-            <h1 style="color: var(--text-main); text-align: center; margin-bottom: 20px; font-family: 'Orbitron'; letter-spacing: 2px;">NEON CYBER SYSTEM</h1>
+            <h1 style="color: var(--text-main); text-align: center; margin-bottom: 20px; font-family: 'Orbitron'; letter-spacing: 2px;">GLOBAL SEARCH</h1>
             
             <div class="search-container">
-                <input type="text" class="search-input" placeholder="SEARCH DATABASE..." id="globalSearch">
+                <input type="text" class="search-input" placeholder="ВВЕДИТЕ НАЗВАНИЕ ФИЛЬМА..." id="globalSearch">
             </div>
 
-            <div class="video-wrap">
-                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1&mute=1&autoplay=1&loop=1&playlist=dQw4w9WgXcQ" title="Video" frameborder="0" allowfullscreen></iframe>
-            </div>
+            <!-- СЮДА ВЫВОДЯТСЯ РЕЗУЛЬТАТЫ ПОИСКА -->
+            <div id="apiResult" class="movies-grid" style="margin-top: 30px;"></div>
 
-            <div class="status" id="statusInfo">SYSTEM: ONLINE | THEME: RED</div>
-            
-            <!-- Убрали resetDB, оставили просто кнопку для визуала или другую функцию -->
-            <button class="btn-reset" onclick="performSearch()">[ SCAN SECTOR ]</button>
+            <div class="status" id="statusInfo" style="margin-top: 20px;">SYSTEM: ONLINE | THEME: RED</div>
         </div>
     </div>
 
-    <!-- СТРАНИЦА 2: CINEMA -->
+    <!-- СТРАНИЦА 2: КАТАЛОГ -->
     <div class="page" id="cinemaPage">
         <div class="movies-container">
             <div class="movies-header">
-                <h1>КИБЕР-КАТАЛОГ ФИЛЬМОВ</h1>
-                <div class="status">ОБНАРУЖЕНО: 20 КИНООБЪЕКТОВ</div>
+                <h1>РЕКОМЕНДАЦИИ СИСТЕМЫ</h1>
             </div>
-            
             <div class="movies-grid" id="moviesGrid">
-                <!-- Фильмы генерируются через main.js -->
+                <!-- Генерируется в JS -->
             </div>
         </div>
     </div>
 
-    <!-- СТРАНИЦА 3: SETTINGS -->
+    <!-- СТРАНИЦА 3: НАСТРОЙКИ -->
     <div class="page" id="settingsPage">
         <div class="settings-card">
             <div class="settings-section">
-                <h2 class="settings-title">ВЫБОР ТЕМЫ</h2>
-                <p style="color: var(--text-main); opacity: 0.8; margin-bottom: 20px;">Выберите акцентный цвет интерфейса.</p>
+                <h2 class="settings-title">ЦВЕТ ИНТЕРФЕЙСА</h2>
                 <div class="color-picker">
                     <div class="color-option" data-color="red" style="background: #ff003c;" onclick="setTheme('red')"></div>
                     <div class="color-option" data-color="blue" style="background: #0066ff;" onclick="setTheme('blue')"></div>
@@ -122,23 +138,48 @@
                     <div class="color-option" data-color="yellow" style="background: #ffcc00;" onclick="setTheme('yellow')"></div>
                 </div>
             </div>
-
             <div class="settings-section">
-                <h2 class="settings-title">ИНФОРМАЦИЯ О СИСТЕМЕ</h2>
+                <h2 class="settings-title">ДАННЫЕ</h2>
                 <div class="status" style="text-align: left;">
-                    <p>Текущая тема: <span id="currentTheme">Красная</span></p>
-                    <p>Пользователь: <span id="currentUserInfo" style="color: var(--accent-color)">Не авторизован</span></p>
-                    <p>Статус сервера: <span id="userCount">ONLINE</span></p>
+                    <p>Тема: <span id="currentTheme">Красная</span></p>
+                    <p>Аккаунт: <span id="currentUserInfo" style="color: var(--accent-color)">Guest</span></p>
                 </div>
             </div>
-
-            <button class="btn-auth" style="width: 100%; margin-top: 20px;" onclick="resetToDefault()">
-                СБРОСИТЬ НАСТРОЙКИ
-            </button>
+            <button class="btn-auth" style="width: 100%; margin-top: 20px;" onclick="resetToDefault()">СБРОС НАСТРОЕК</button>
         </div>
     </div>
 
-    <!-- ПОДКЛЮЧЕНИЕ JS (VITE) -->
+    <!-- МОДАЛЬНОЕ ОКНО ФИЛЬМА -->
+    <div class="modal-overlay" id="movieModal">
+        <div class="movie-info-card">
+            <span class="close-modal" onclick="kinopoiskAPI.closeModal()">×</span>
+            
+            <div class="movie-content-wrapper">
+                <div class="movie-poster-col">
+                    <img id="modalPoster" src="" alt="Poster" class="full-poster">
+                    <div class="modal-rating" id="modalRating">0.0</div>
+                </div>
+
+                <div class="movie-info-col">
+                    <h2 id="modalTitle" class="movie-big-title">TITLE</h2>
+                    <div id="modalYear" class="movie-meta">YEAR: 2024</div>
+                    
+                    <div class="movie-desc-box">
+                        <p id="modalDesc">Описание загружается...</p>
+                    </div>
+
+                    <div class="player-wrapper">
+                        <div class="player-label">VIDEO UPLINK ESTABLISHED</div>
+                        <!-- Плеер -->
+                        <iframe id="modalPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                        <!-- Кнопка появится тут через JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДКЛЮЧЕНИЕ JS -->
     <script type="module" src="./main.js"></script>
 </body>
 </html>

@@ -1,9 +1,7 @@
-// main.js
-
-// 1. Импортируем auth из вашего файла (проверьте путь, если файл в папке src, то './firebase')
+// ==========================================
+// 1. ИМПОРТЫ
+// ==========================================
 import { auth } from './firebase'; 
-
-// 2. Импортируем функции из пакета (без ссылок https!)
 import { 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
@@ -11,12 +9,12 @@ import {
     onAuthStateChanged 
 } from "firebase/auth";
 
-// --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
-let currentTheme = 'red';
-let movies = [];
-let moviesLoaded = false;
+// ИМПОРТИРУЕМ API ИЗ НОВОГО ФАЙЛА
+import { kinopoiskAPI } from './apis.js'; 
 
-// --- ТЕМЫ ---
+// ==========================================
+// 2. НАСТРОЙКИ И ТЕМЫ
+// ==========================================
 const themes = {
     red: { glow: '255,0,60', accent: '#ff003c', name: 'Красная' },
     blue: { glow: '0,102,255', accent: '#0066ff', name: 'Синяя' },
@@ -28,96 +26,52 @@ const themes = {
     yellow: { glow: '255,204,0', accent: '#ffcc00', name: 'Желтая' }
 };
 
-// --- УСТАНОВКА ТЕМЫ ---
 function setTheme(themeName) {
     const theme = themes[themeName];
     if (!theme) return;
     
-    currentTheme = themeName;
-    
-    // Применяем CSS переменные
     document.documentElement.style.setProperty('--glow-color', theme.glow);
     document.documentElement.style.setProperty('--accent-color', theme.accent);
     document.documentElement.style.setProperty('--card-border', `rgba(${theme.glow},0.4)`);
     document.documentElement.style.setProperty('--blob-gradient', `radial-gradient(circle, rgba(${theme.glow},0.4) 0%, rgba(${theme.glow},0) 70%)`);
     
-    // 1. Убираем класс active у всех кнопок
-    document.querySelectorAll('.color-option').forEach(opt => {
-        opt.classList.remove('active');
-    });
-
-    // 2. Ищем нужную кнопку по атрибуту и делаем активной
-    // Это работает и при клике, и при автоматической загрузке
+    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
     const activeBtn = document.querySelector(`.color-option[data-color="${themeName}"]`);
-    if(activeBtn) {
-        activeBtn.classList.add('active');
-    }
+    if(activeBtn) activeBtn.classList.add('active');
     
-    // Обновляем тексты
     const statusInfo = document.getElementById('statusInfo');
     if(statusInfo) statusInfo.textContent = `SYSTEM: ONLINE | THEME: ${themeName.toUpperCase()}`;
-    
     const themeNameEl = document.getElementById('currentTheme');
     if(themeNameEl) themeNameEl.textContent = theme.name;
     
-    // Сохраняем
     localStorage.setItem('theme', themeName);
-    
-    // Вибрация (если есть действие пользователя)
-    if (navigator.vibrate) navigator.vibrate(10);
 }
-// --- СИСТЕМА АВТОРИЗАЦИИ (FIREBASE) ---
+
+// ==========================================
+// 3. АВТОРИЗАЦИЯ
+// ==========================================
 const authAPI = {
     register: async () => {
         const email = document.getElementById('regUser').value.trim();
         const password = document.getElementById('regPass').value.trim();
         const errBox = document.getElementById('regError');
-        
-        if(!email || !password) {
-            ui.showError(errBox, "Введите Email и пароль");
-            return;
-        }
-        
+        if(!email || !password) { ui.showError(errBox, "Введите Email и пароль"); return; }
         try {
             await createUserWithEmailAndPassword(auth, email, password);
             ui.closeModal();
             alert("ACCESS GRANTED: Аккаунт создан.");
-        } catch (error) {
-            console.error(error);
-            let msg = "Ошибка регистрации";
-            if(error.code === 'auth/email-already-in-use') msg = "Email уже занят";
-            if(error.code === 'auth/weak-password') msg = "Пароль слишком простой (мин. 6 симв.)";
-            if(error.code === 'auth/invalid-email') msg = "Некорректный Email";
-            ui.showError(errBox, msg);
-        }
+        } catch (error) { ui.showError(errBox, "Ошибка: " + error.code); }
     },
-
     login: async () => {
         const email = document.getElementById('loginUser').value.trim();
         const password = document.getElementById('loginPass').value.trim();
         const errBox = document.getElementById('loginError');
-
         try {
             await signInWithEmailAndPassword(auth, email, password);
             ui.closeModal();
-        } catch (error) {
-            console.error(error);
-            let msg = "Ошибка входа";
-            if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                msg = "Неверный Email или пароль";
-            }
-            if(error.code === 'auth/invalid-email') msg = "Некорректный Email";
-            ui.showError(errBox, msg);
-        }
+        } catch (error) { ui.showError(errBox, "Ошибка: " + error.code); }
     },
-
-    logout: async () => {
-        try {
-            await signOut(auth);
-        } catch (error) {
-            console.error("Ошибка выхода:", error);
-        }
-    }
+    logout: async () => { await signOut(auth); }
 };
 
 const ui = {
@@ -126,86 +80,54 @@ const ui = {
     loginForm: document.getElementById('loginForm'),
     regForm: document.getElementById('registerForm'),
 
-    openModal: () => {
-        if(ui.modal) ui.modal.classList.add('active');
-        setTimeout(() => {
-            const el = document.getElementById('loginUser');
-            if(el) el.focus();
-        }, 100);
-    },
-    
-    closeModal: () => {
-        if(ui.modal) ui.modal.classList.remove('active');
-        document.querySelectorAll('.auth-card input').forEach(input => input.value = '');
+    openModal: () => { if(ui.modal) ui.modal.classList.add('active'); },
+    closeModal: () => { 
+        if(ui.modal) ui.modal.classList.remove('active'); 
         document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
-        setTimeout(() => {
-            if(ui.loginForm) ui.loginForm.style.display = 'block';
-            if(ui.regForm) ui.regForm.style.display = 'none';
-        }, 300);
     },
-    
     toggleForms: () => {
         if(ui.loginForm.style.display === 'none') {
-            ui.loginForm.style.display = 'block';
-            ui.regForm.style.display = 'none';
-            setTimeout(() => document.getElementById('loginUser').focus(), 100);
+            ui.loginForm.style.display = 'block'; ui.regForm.style.display = 'none';
         } else {
-            ui.loginForm.style.display = 'none';
-            ui.regForm.style.display = 'block';
-            setTimeout(() => document.getElementById('regUser').focus(), 100);
-        }
-        document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
-    },
-    
-    showError: (element, msg) => {
-        if(element) {
-            element.innerText = msg;
-            element.style.display = 'block';
-        } else {
-            alert(msg);
+            ui.loginForm.style.display = 'none'; ui.regForm.style.display = 'block';
         }
     },
-    
+    showError: (element, msg) => { if(element) { element.innerText = msg; element.style.display = 'block'; } },
     updateAuthUI: (user) => {
         const userInfoEl = document.getElementById('currentUserInfo');
-        const userCountEl = document.getElementById('userCount');
-
         if(user) {
-            ui.navBtn.innerText = "ВЫЙТИ";
-            ui.navBtn.onclick = authAPI.logout; // JS обработчик
-            
+            ui.navBtn.innerText = "ВЫЙТИ"; ui.navBtn.onclick = authAPI.logout;
             if(userInfoEl) userInfoEl.textContent = user.email;
-            if(userCountEl) userCountEl.textContent = "CLASSIFIED";
         } else {
-            ui.navBtn.innerText = "ВОЙТИ";
-            ui.navBtn.onclick = ui.openModal; // JS обработчик
-            
-            if(userInfoEl) userInfoEl.textContent = 'Не авторизован';
-            if(userCountEl) userCountEl.textContent = "UNKNOWN";
+            ui.navBtn.innerText = "ВОЙТИ"; ui.navBtn.onclick = ui.openModal;
+            if(userInfoEl) userInfoEl.textContent = 'Guest';
         }
     }
 };
 
-// Экспортируем функции в глобальную область видимости (window),
-// чтобы HTML onclick="..." их видел.
+// ==========================================
+// 4. ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДЛЯ HTML)
+// ==========================================
 window.setTheme = setTheme;
 window.authAPI = authAPI;
 window.ui = ui;
+
+// ПРИСВАИВАЕМ ИМПОРТИРОВАННЫЙ API В WINDOW
+window.kinopoiskAPI = kinopoiskAPI; 
+
 window.switchPage = function(pageName) {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    if(window.event) window.event.target.classList.add('active');
+    if(window.event && window.event.target) window.event.target.classList.add('active');
     
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    
     setTimeout(() => {
         const page = document.getElementById(pageName + 'Page');
         if(page) page.classList.add('active');
     }, 50);
-    
-    if (pageName === 'cinema' && !moviesLoaded) {
-        generateMovies();
+
+    if(pageName === 'cinema' && document.getElementById('moviesGrid').innerHTML.trim() === '') {
+        generateFakeMovies();
     }
-    if (navigator.vibrate) navigator.vibrate(10);
 };
 
 window.resetToDefault = function() {
@@ -213,80 +135,59 @@ window.resetToDefault = function() {
     localStorage.removeItem('theme');
 };
 
+// Функция возврата на главную (очистка)
+window.resetToMain = function() {
+    window.switchPage('search');
+    const input = document.getElementById('globalSearch');
+    if (input) input.value = '';
+    const results = document.getElementById('apiResult');
+    if (results) results.innerHTML = '';
+};
+
 window.performSearch = function() {
     const query = document.getElementById('globalSearch').value.trim();
     if(query) {
-        alert(`SCANNING SYSTEM FOR: "${query}"...\n\n[RESULT]: NO MATCH FOUND IN SECTOR 7.`);
+        kinopoiskAPI.searchByKeyword(query);
     } else {
-        alert("SYSTEM ERROR: EMPTY SEARCH QUERY");
+        alert("Введите название для поиска!");
     }
-}
+};
 
-// --- ФИЛЬМЫ ---
-function generateMovies() {
-    const movieTitles = [
-        "КИБЕРПАНК 2077", "МАТРИЦА", "БЕГУЩИЙ ПО ЛЕЗВИЮ", "ВАЛЛ-И",
-        "НАЧАЛО", "ИНТЕРСТЕЛЛАР", "ДЮНА", "АВАТАР", "ГРАВИТАЦИЯ", "МАРСИАНИН",
-        "ТЕРМИНАТОР", "ЧУЖОЙ", "ПРОМЕТЕЙ", "БЕЗУМНЫЙ МАКС", "ЗВЕЗДНЫЕ ВОЙНЫ",
-        "АВАЛАНЧА", "ОБЛАЧНЫЙ АТЛАС", "ИСТОЧНИК", "ЛЮСИ", "ДЖОННИ МНЕМОНИК"
-    ];
-    const genres = ["КИБЕРПАНК", "НАУЧНАЯ ФАНТАСТИКА", "ФЭНТЕЗИ", "ЭКШН", "ТРИЛЛЕР"];
+function generateFakeMovies() {
     const grid = document.getElementById('moviesGrid');
-    if(!grid) return;
-    grid.innerHTML = '';
-
-    for (let i = 0; i < 20; i++) {
-        const title = movieTitles[i % movieTitles.length];
-        const year = 1990 + Math.floor(Math.random() * 34);
-        const rating = (5 + Math.random() * 5).toFixed(1);
-        const movieGenres = [];
-        const numGenres = 1 + Math.floor(Math.random() * 2);
-        for (let j = 0; j < numGenres; j++) {
-            movieGenres.push(genres[Math.floor(Math.random() * genres.length)]);
-        }
-
-        const movieCard = document.createElement('div');
-        movieCard.className = 'movie-card';
-        movieCard.onclick = () => alert(`Выбран фильм: ${title} (${year})`);
-        
-        movieCard.innerHTML = `
-            <div class="movie-title">${title}</div>
-            <div class="movie-year">${year}</div>
-            <div class="movie-genres">
-                ${movieGenres.map(genre => `<span class="genre-tag">${genre}</span>`).join('')}
-            </div>
-            <div class="movie-rating">
-                <span>РЕЙТИНГ:</span>
-                <span class="rating-value">${rating}/10</span>
+    const titles = ["CYBERPUNK 2077", "BLADE RUNNER", "DUNE", "TRON", "AKIRA", "MATRIX"];
+    let html = '';
+    for(let i=0; i<12; i++) {
+        const t = titles[i % titles.length];
+        html += `
+            <div class="movie-card" onclick="alert('Демо-каталог. Используйте ПОИСК!')">
+                <div class="movie-title">${t}</div>
+                <div style="display:flex; justify-content:space-between; margin-top:5px; opacity:0.7; font-size:12px;">
+                    <span class="movie-year">2077</span>
+                    <span style="color:var(--accent-color)">DEMO</span>
+                </div>
             </div>
         `;
-        grid.appendChild(movieCard);
     }
-    moviesLoaded = true;
+    grid.innerHTML = html;
 }
 
-// --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ---
+// ==========================================
+// 5. ИНИЦИАЛИЗАЦИЯ
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Тема
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme && themes[savedTheme]) {
-        setTheme(savedTheme);
-    } else {
-        setTheme('red'); 
-    }
+    const savedTheme = localStorage.getItem('theme') || 'red';
+    setTheme(savedTheme);
 
-    // 2. СЛУШАТЕЛЬ FIREBASE AUTH
-    onAuthStateChanged(auth, (user) => {
-        console.log("Auth State Changed:", user ? user.email : "Logged out");
-        ui.updateAuthUI(user);
-    });
+    onAuthStateChanged(auth, (user) => { ui.updateAuthUI(user); });
     
-    // 3. UI Обработчики
-    const closeModalBtn = document.getElementById('closeModal');
-    if(closeModalBtn) closeModalBtn.onclick = ui.closeModal;
+    const closeAuthBtn = document.getElementById('closeAuthModal');
+    if(closeAuthBtn) closeAuthBtn.onclick = ui.closeModal;
     
     window.onclick = (e) => { 
         if(ui.modal && e.target === ui.modal) ui.closeModal(); 
+        const movieModal = document.getElementById('movieModal');
+        if(movieModal && e.target === movieModal) kinopoiskAPI.closeModal();
     }
     
     const searchInput = document.getElementById('globalSearch');
@@ -295,19 +196,4 @@ document.addEventListener('DOMContentLoaded', () => {
             if(e.key === 'Enter') performSearch();
         });
     }
-    
-    // Enter на полях ввода
-    ['loginUser', 'loginPass'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.addEventListener('keyup', (e) => {
-            if(e.key === 'Enter') authAPI.login();
-        });
-    });
-    
-    ['regUser', 'regPass'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) el.addEventListener('keyup', (e) => {
-            if(e.key === 'Enter') authAPI.register();
-        });
-    });
 });
