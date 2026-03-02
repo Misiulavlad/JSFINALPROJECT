@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CyberCinema — Каталог</title>
+  <title>CyberCinema — История</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
 
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/page-catalog.css">
+  <link rel="stylesheet" href="css/page-history.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 
@@ -42,9 +42,9 @@
     <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
 
     <div class="nav-center">
-      <a class="nav-btn active" href="index.html">КАТАЛОГ</a>
+      <a class="nav-btn" href="index.html">КАТАЛОГ</a>
       <a class="nav-btn" href="search.html">ПОИСК</a>
-      <a class="nav-btn" href="history.html">ИСТОРИЯ</a>
+      <a class="nav-btn active" href="history.html">ИСТОРИЯ</a>
       <a class="nav-btn" href="settings.html">НАСТРОЙКИ</a>
     </div>
 
@@ -52,12 +52,15 @@
   </nav>
 
   <main class="main">
-    <div class="movies-container">
-      <div class="movies-header">
-        <h1>РЕКОМЕНДАЦИИ СИСТЕМЫ</h1>
+    <div class="history-container">
+      <div class="history-header">
+        <h1>ИСТОРИЯ ПРОСМОТРОВ</h1>
+        <button class="btn-clear" onclick="historyManager.clearHistory()">
+          ОЧИСТИТЬ ВСЁ
+        </button>
       </div>
 
-      <div class="movies-grid" id="moviesGrid"></div>
+      <div id="historyGrid" class="history-grid"></div>
     </div>
   </main>
 

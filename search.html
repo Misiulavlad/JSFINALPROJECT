@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CyberCinema — Каталог</title>
+  <title>CyberCinema — Поиск</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
 
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/page-catalog.css">
+  <link rel="stylesheet" href="css/page-search.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 
@@ -42,8 +42,8 @@
     <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
 
     <div class="nav-center">
-      <a class="nav-btn active" href="index.html">КАТАЛОГ</a>
-      <a class="nav-btn" href="search.html">ПОИСК</a>
+      <a class="nav-btn" href="index.html">КАТАЛОГ</a>
+      <a class="nav-btn active" href="search.html">ПОИСК</a>
       <a class="nav-btn" href="history.html">ИСТОРИЯ</a>
       <a class="nav-btn" href="settings.html">НАСТРОЙКИ</a>
     </div>
@@ -52,12 +52,17 @@
   </nav>
 
   <main class="main">
-    <div class="movies-container">
-      <div class="movies-header">
-        <h1>РЕКОМЕНДАЦИИ СИСТЕМЫ</h1>
+    <div class="search-card">
+      <h1 class="search-title">GLOBAL SEARCH</h1>
+
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="ВВЕДИТЕ НАЗВАНИЕ ФИЛЬМА..." id="globalSearch">
       </div>
 
-      <div class="movies-grid" id="moviesGrid"></div>
+      <button class="btn-primary" onclick="performSearch()">НАЙТИ</button>
+
+      <div id="apiResult" class="movies-grid" style="margin-top: 30px;"></div>
+      <div class="status" id="statusInfo" style="margin-top: 20px;">SYSTEM: ONLINE</div>
     </div>
   </main>
 

@@ -1,8 +1,6 @@
-// firebase.js
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// Добавляем импорт Auth
-import { getAuth } from "firebase/auth"; 
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDEglvVZgdOR4hG9ooe8JQaI-Uwfh0BKXw",
@@ -14,12 +12,8 @@ const firebaseConfig = {
   measurementId: "G-ZZMG4VK7VE"
 };
 
-// Инициализация
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Инициализация Auth
 export const auth = getAuth(app);
-
-// Экспортируем app по дефолту (на всякий случай)
 export default app;

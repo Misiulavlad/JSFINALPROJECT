@@ -1,0 +1,210 @@
+.history-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(var(--glow-color), 0.3);
+  }
+  
+  .history-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    color: var(--text-main);
+  }
+  
+  .btn-clear {
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Orbitron';
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .btn-clear:hover {
+    border-color: #ff3131;
+    color: #ff3131;
+    background: rgba(255, 49, 49, 0.1);
+    box-shadow: 0 0 10px rgba(255, 49, 49, 0.3);
+  }
+  
+  .history-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .history-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 15px;
+    transition: 0.3s;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .history-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 5px 20px rgba(var(--glow-color), 0.3);
+    transform: translateX(5px);
+  }
+  
+  .history-poster {
+    flex: 0 0 80px;
+    width: 80px;
+    height: 120px;
+    background-color: rgba(255, 255, 255, 0.05);
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .no-poster {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    opacity: 0.2;
+  }
+  
+  .history-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .history-title {
+    font-family: 'Orbitron';
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .history-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: var(--accent-color);
+    margin-bottom: 5px;
+  }
+  
+  .history-date {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'Orbitron';
+    letter-spacing: 0.5px;
+  }
+  
+  .history-delete {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 49, 49, 0.1);
+    border: 1px solid rgba(255, 49, 49, 0.3);
+    color: #ff3131;
+    font-size: 20px;
+    line-height: 1;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .history-delete:hover {
+    background: #ff3131;
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 49, 49, 0.5);
+  }
+  
+  /* Пустое состояние */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+  }
+  
+  .empty-state h2 {
+    font-family: 'Orbitron';
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .empty-state p {
+    font-size: 14px;
+  }
+  
+  /* Адаптив */
+  @media (max-width: 600px) {
+    .history-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+  
+    .history-header h1 {
+      font-size: 1.5rem;
+    }
+  
+    .history-card {
+      padding: 12px;
+    }
+  
+    .history-poster {
+      flex: 0 0 60px;
+      width: 60px;
+      height: 90px;
+    }
+  
+    .history-title {
+      font-size: 14px;
+    }
+  
+    .history-meta {
+      font-size: 12px;
+    }
+  
+    .history-delete {
+      top: 5px;
+      right: 5px;
+      width: 25px;
+      height: 25px;
+      font-size: 16px;
+    }
+  }

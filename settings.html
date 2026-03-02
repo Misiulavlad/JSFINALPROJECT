@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CyberCinema — Каталог</title>
+  <title>CyberCinema — Настройки</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
 
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/page-catalog.css">
+  <link rel="stylesheet" href="css/page-settings.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 
@@ -42,22 +42,41 @@
     <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
 
     <div class="nav-center">
-      <a class="nav-btn active" href="index.html">КАТАЛОГ</a>
+      <a class="nav-btn" href="index.html">КАТАЛОГ</a>
       <a class="nav-btn" href="search.html">ПОИСК</a>
       <a class="nav-btn" href="history.html">ИСТОРИЯ</a>
-      <a class="nav-btn" href="settings.html">НАСТРОЙКИ</a>
+      <a class="nav-btn active" href="settings.html">НАСТРОЙКИ</a>
     </div>
 
     <button class="btn-auth" id="navAuthBtn">ЗАГРУЗКА...</button>
   </nav>
 
   <main class="main">
-    <div class="movies-container">
-      <div class="movies-header">
-        <h1>РЕКОМЕНДАЦИИ СИСТЕМЫ</h1>
+    <div class="settings-card">
+      <div class="settings-section">
+        <h2 class="settings-title">ЦВЕТ ИНТЕРФЕЙСА</h2>
+
+        <div class="color-picker">
+          <div class="color-option" data-color="red" style="background:#ff003c" onclick="setTheme('red')"></div>
+          <div class="color-option" data-color="blue" style="background:#0066ff" onclick="setTheme('blue')"></div>
+          <div class="color-option" data-color="green" style="background:#00cc66" onclick="setTheme('green')"></div>
+          <div class="color-option" data-color="purple" style="background:#9933ff" onclick="setTheme('purple')"></div>
+          <div class="color-option" data-color="cyan" style="background:#00cccc" onclick="setTheme('cyan')"></div>
+          <div class="color-option" data-color="orange" style="background:#ff6600" onclick="setTheme('orange')"></div>
+          <div class="color-option" data-color="pink" style="background:#ff3399" onclick="setTheme('pink')"></div>
+          <div class="color-option" data-color="yellow" style="background:#ffcc00" onclick="setTheme('yellow')"></div>
+        </div>
       </div>
 
-      <div class="movies-grid" id="moviesGrid"></div>
+      <div class="settings-section">
+        <h2 class="settings-title">ДАННЫЕ</h2>
+        <div class="status" style="text-align:left;">
+          <p>Тема: <span id="currentTheme">—</span></p>
+          <p>Аккаунт: <span id="currentUserInfo" style="color:var(--accent-color)">Guest</span></p>
+        </div>
+      </div>
+
+      <button class="btn-auth" style="width:100%; margin-top:20px;" onclick="resetToDefault()">СБРОС НАСТРОЕК</button>
     </div>
   </main>
 
