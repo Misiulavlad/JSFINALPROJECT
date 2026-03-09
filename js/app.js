@@ -132,26 +132,19 @@ const ui = {
   }
 };
 
+// КАТАЛОГ
 // ==========================================
-// ДЕМО-ФИЛЬМЫ
-// ==========================================
-function generateFakeMovies() {
-  const grid = document.getElementById('moviesGrid');
-  if (!grid || grid.innerHTML.trim()) return;
+function loadCatalog() {
+  // Проверяем, авторизован ли пользователь
+  const user = window.currentUser; // будет устанавливаться через onAuthStateChanged
 
-  const titles = ["CYBERPUNK 2077", "BLADE RUNNER", "DUNE", "TRON", "AKIRA", "MATRIX"];
-  grid.innerHTML = Array.from({ length: 12 }).map((_, i) => {
-    const t = titles[i % titles.length];
-    return `
-      <div class="movie-card" onclick="alert('Демо-каталог. Используйте ПОИСК!')">
-        <div class="movie-title">${t}</div>
-        <div class="movie-card-meta">
-          <span class="movie-year">2077</span>
-          <span class="movie-demo">DEMO</span>
-        </div>
-      </div>
-    `;
-  }).join('');
+  if (!user) {
+    // Если НЕ авторизован — загружаем TOP_250_MOVIES
+    kinopoiskAPI.loadCatalog();
+  } else {
+    // Если авторизован — загружаем персонализированный каталог (можно использовать similars позже)
+    kinopoiskAPI.loadCatalog();
+  }
 }
 
 // ==========================================
@@ -298,8 +291,15 @@ window.historyManager = historyManager;
 document.addEventListener('DOMContentLoaded', () => {
   setTheme(localStorage.getItem('theme') || 'red');
 
-  onAuthStateChanged(auth, (user) => ui.updateAuthUI(user));
-
+  onAuthStateChanged(auth, (user) => {
+    window.currentUser = user; // Сохраняем глобально
+    ui.updateAuthUI(user);
+    
+    // Если на главной странице — перезагружаем каталог
+    if (document.getElementById('moviesGrid')) {
+      loadCatalog();
+    }
+  });
   document.getElementById('closeAuthModal')?.addEventListener('click', ui.closeModal);
 
   window.addEventListener('click', (e) => {
@@ -316,8 +316,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  generateFakeMovies();
-
+  loadCatalog();
+  
   // Рендерим историю, если на странице history.html
   if (window.location.pathname.includes('history.html')) {
     historyManager.renderHistory();
