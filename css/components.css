@@ -61,9 +61,7 @@
   letter-spacing: 1px;
 }
 
-/* ==========================================
-   МОДАЛКИ
-   ========================================== */
+/* модалки */
 
 .modal-overlay {
   position: fixed;
@@ -117,9 +115,7 @@
 .input-group input:focus { border-color: var(--accent-color); }
 .switch-form { margin-top: 15px; font-size: 12px; cursor: pointer; text-decoration: underline; }
 
-/* ==========================================
-   СЕТКА ФИЛЬМОВ
-   ========================================== */
+/* сетка фильмов */
 
 .movies-container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
 .movies-header {
@@ -137,9 +133,7 @@
   padding: 10px;
 }
 
-/* ==========================================
-   УЛУЧШЕННЫЕ КАРТОЧКИ ФИЛЬМОВ
-   ========================================== */
+/* карточки */
 
 .movie-card.enhanced {
   background: var(--card-bg);
@@ -216,7 +210,6 @@
   letter-spacing: 1px;
 }
 
-/* Старые карточки (для обратной совместимости) */
 .movie-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -242,9 +235,7 @@
 
 .movie-demo { color: var(--accent-color); }
 
-/* ==========================================
-   МОДАЛКА ФИЛЬМА
-   ========================================== */
+/* модалка фильма */
 
 .movie-info-card {
   background: rgba(10, 10, 15, 0.98);
@@ -293,9 +284,7 @@
 .player-label { background: rgba(var(--glow-color), 0.1); color: var(--accent-color); font-family: 'Orbitron'; font-size: 10px; padding: 5px 10px; letter-spacing: 2px; }
 #modalPlayer { width: 100%; aspect-ratio: 16/9; display: block; border: none; }
 
-/* ==========================================
-   ДОПОЛНИТЕЛЬНЫЕ СЕКЦИИ В МОДАЛКЕ
-   ========================================== */
+/* доп секции */
 
 .info-section {
   margin-top: 25px;

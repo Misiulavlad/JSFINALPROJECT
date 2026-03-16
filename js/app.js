@@ -8,9 +8,7 @@ import {
 
 import { kinopoiskAPI } from './apis.js';
 
-// ==========================================
-// ТЕМЫ
-// ==========================================
+// тема
 const themes = {
   red:    { glow: '255,0,60',   accent: '#ff003c', name: 'Красная' },
   blue:   { glow: '0,102,255',  accent: '#0066ff', name: 'Синяя' },
@@ -45,9 +43,7 @@ function setTheme(themeName) {
   localStorage.setItem('theme', themeName);
 }
 
-// ==========================================
-// АВТОРИЗАЦИЯ
-// ==========================================
+// авторизация
 const authAPI = {
   register: async () => {
     const email = document.getElementById('regUser')?.value.trim();
@@ -83,9 +79,7 @@ const authAPI = {
   }
 };
 
-// ==========================================
 // UI
-// ==========================================
 const ui = {
   get modal() { return document.getElementById('authModal'); },
   get navBtn() { return document.getElementById('navAuthBtn'); },
@@ -132,41 +126,31 @@ const ui = {
   }
 };
 
-// КАТАЛОГ
-// ==========================================
+// rfnfkju
 function loadCatalog() {
-  // Проверяем, авторизован ли пользователь
-  const user = window.currentUser; // будет устанавливаться через onAuthStateChanged
+  const user = window.currentUser; 
 
   if (!user) {
-    // Если НЕ авторизован — загружаем TOP_250_MOVIES
     kinopoiskAPI.loadCatalog();
   } else {
-    // Если авторизован — загружаем персонализированный каталог (можно использовать similars позже)
     kinopoiskAPI.loadCatalog();
   }
 }
 
-// ==========================================
-// ПОИСК
-// ==========================================
+// поиск
 function performSearch() {
   const query = document.getElementById('globalSearch')?.value.trim();
   if (!query) return alert("Введите название для поиска!");
   kinopoiskAPI.searchByKeyword(query);
 }
 
-// ==========================================
-// СБРОС
-// ==========================================
+// сброс
 function resetToDefault() {
   localStorage.removeItem('theme');
   setTheme('red');
 }
 
-// ==========================================
-// ИСТОРИЯ ПРОСМОТРОВ
-// ==========================================
+// история просмотров
 const historyManager = {
   // Получить историю
   getHistory: () => {
@@ -191,7 +175,7 @@ const historyManager = {
       viewedAt: new Date().toISOString()
     });
     
-    // Ограничиваем историю 50 фильмами
+    // Ограничивание
     if (history.length > 50) history = history.slice(0, 50);
     
     localStorage.setItem('movieHistory', JSON.stringify(history));
@@ -274,9 +258,7 @@ const historyManager = {
   }
 };
 
-// ==========================================
-// ГЛОБАЛЬНЫЕ ФУНКЦИИ
-// ==========================================
+// глобальные функции
 window.setTheme = setTheme;
 window.resetToDefault = resetToDefault;
 window.performSearch = performSearch;
@@ -285,14 +267,12 @@ window.ui = ui;
 window.kinopoiskAPI = kinopoiskAPI;
 window.historyManager = historyManager;
 
-// ==========================================
-// ИНИЦИАЛИЗАЦИЯ
-// ==========================================
+// инициализация
 document.addEventListener('DOMContentLoaded', () => {
   setTheme(localStorage.getItem('theme') || 'red');
 
   onAuthStateChanged(auth, (user) => {
-    window.currentUser = user; // Сохраняем глобально
+    window.currentUser = user;
     ui.updateAuthUI(user);
     
     // Если на главной странице — перезагружаем каталог
@@ -318,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadCatalog();
   
-  // Рендерим историю, если на странице history.html
+// прогружаем историю
   if (window.location.pathname.includes('history.html')) {
     historyManager.renderHistory();
   }

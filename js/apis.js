@@ -1,9 +1,7 @@
 export const kinopoiskAPI = {
   key: '97902904-1707-4ced-9ece-d2c5a54c9421',
 
-  // ==========================================
-  // ПОИСК ПО КЛЮЧЕВОМУ СЛОВУ
-  // ==========================================
+// поиск по слову
   searchByKeyword: async (query) => {
     const url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(query)}`;
     const resultContainer = document.getElementById('apiResult');
@@ -26,9 +24,7 @@ export const kinopoiskAPI = {
     }
   },
 
-  // ==========================================
-  // ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ПОИСКА
-  // ==========================================
+// результаты
   renderSearchResults: (data) => {
     const container = document.getElementById('apiResult');
     if (!container) return;
@@ -63,9 +59,7 @@ export const kinopoiskAPI = {
     container.innerHTML = html;
   },
 
-  // ==========================================
-  // ПОЛУЧИТЬ ПОПУЛЯРНЫЕ ФИЛЬМЫ (ДЛЯ КАТАЛОГА)
-  // ==========================================
+// популярное
   loadCatalog: async () => {
     const grid = document.getElementById('moviesGrid');
     if (!grid) return;
@@ -110,9 +104,7 @@ export const kinopoiskAPI = {
     }
   },
 
-  // ==========================================
-  // ОТКРЫТЬ МОДАЛЬНОЕ ОКНО ФИЛЬМА
-  // ==========================================
+  // модалка фильма
   openFilmModal: async (filmId) => {
     const modal = document.getElementById('movieModal');
     modal.classList.add('active');
@@ -141,7 +133,7 @@ export const kinopoiskAPI = {
     if (similarsContainer) similarsContainer.innerHTML = '';
     
     try {
-      // ========== ЗАПРОС 1: Основная информация ==========
+      //  ЗАПРОС 1: Основная информация 
       const urlInfo = `https://kinopoiskapiunofficial.tech/api/v2.2/films/${filmId}`;
       const responseInfo = await fetch(urlInfo, {
         headers: { 'X-API-KEY': kinopoiskAPI.key }
@@ -169,7 +161,7 @@ export const kinopoiskAPI = {
         });
       }
 
-      // ========== ЗАПРОС 2: Видео ==========
+      //  ЗАПРОС 2: Видео
       const urlVideo = `https://kinopoiskapiunofficial.tech/api/v2.2/films/${filmId}/videos`;
       const responseVideo = await fetch(urlVideo, {
         headers: { 'X-API-KEY': kinopoiskAPI.key }
@@ -221,15 +213,15 @@ export const kinopoiskAPI = {
       
       playerWrapper.appendChild(controls);
 
-      // ========== ЗАПРОС 3: Сезоны (если сериал) ==========
+      // ЗАПРОС 3: Сезоны
       if (data.serial) {
         kinopoiskAPI.loadSeasons(filmId);
       }
 
-      // ========== ЗАПРОС 4: Факты ==========
+      // ЗАПРОС 4: Факты
       kinopoiskAPI.loadFacts(filmId);
 
-      // ========== ЗАПРОС 5: Похожие фильмы ==========
+      // ЗАПРОС 5: Похожие фильмы
       kinopoiskAPI.loadSimilars(filmId);
       
     } catch (error) {
@@ -239,9 +231,7 @@ export const kinopoiskAPI = {
     }
   },
 
-  // ==========================================
-  // ЗАГРУЗИТЬ СЕЗОНЫ
-  // ==========================================
+// загрузка сезонов
   loadSeasons: async (filmId) => {
     const container = document.getElementById('seasonsContainer');
     if (!container) return;
@@ -275,9 +265,7 @@ export const kinopoiskAPI = {
     }
   },
 
-  // ==========================================
-  // ЗАГРУЗИТЬ ФАКТЫ
-  // ==========================================
+// загрузка фактов
   loadFacts: async (filmId) => {
     const container = document.getElementById('factsContainer');
     if (!container) return;
@@ -307,9 +295,7 @@ export const kinopoiskAPI = {
     }
   },
 
-  // ==========================================
-  // ЗАГРУЗИТЬ ПОХОЖИЕ ФИЛЬМЫ
-  // ==========================================
+// загрузка похожих
   loadSimilars: async (filmId) => {
     const container = document.getElementById('similarsContainer');
     if (!container) return;
@@ -349,9 +335,7 @@ export const kinopoiskAPI = {
     }
   },
 
-  // ==========================================
-  // ЗАПУСТИТЬ ВИДЕО
-  // ==========================================
+  // запустить видео
   playVideo: (url) => {
     const player = document.getElementById('modalPlayer');
     const controls = document.getElementById('videoControls');
@@ -362,9 +346,7 @@ export const kinopoiskAPI = {
     if(controls) controls.remove();
   },
 
-  // ==========================================
-  // ЗАКРЫТЬ МОДАЛКУ
-  // ==========================================
+  // закрыть модалку
   closeModal: () => {
     const modal = document.getElementById('movieModal');
     modal.classList.remove('active');
