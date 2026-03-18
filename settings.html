@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CyberCinema — Настройки</title>
+  <title>CyberCinema — Settings</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
   <script>
     (() => {
@@ -18,6 +18,8 @@
       const saved = localStorage.getItem('theme') || 'red';
       const t = themes[saved] || themes.red;
       const root = document.documentElement;
+      const lang = localStorage.getItem('lang') || 'ru';
+      document.documentElement.lang = lang;
       root.style.setProperty('--glow-color', t.glow);
       root.style.setProperty('--accent-color', t.accent);
       root.style.setProperty('--card-border', `rgba(${t.glow},0.4)`);
@@ -31,7 +33,6 @@
   <link rel="stylesheet" href="css/page-settings.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
-
 <body>
   <div class="blobs-container">
     <div class="blob blob-1"></div>
@@ -42,19 +43,32 @@
     <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
 
     <div class="nav-center">
-      <a class="nav-btn" href="index.html">КАТАЛОГ</a>
-      <a class="nav-btn" href="search.html">ПОИСК</a>
-      <a class="nav-btn" href="history.html">ИСТОРИЯ</a>
-      <a class="nav-btn active" href="settings.html">НАСТРОЙКИ</a>
+      <a class="nav-btn" href="index.html" data-i18n="nav.catalog">КАТАЛОГ</a>
+      <a class="nav-btn" href="search.html" data-i18n="nav.search">ПОИСК</a>
+      <a class="nav-btn" href="history.html" data-i18n="nav.history">ИСТОРИЯ</a>
+      <a class="nav-btn active" href="settings.html" data-i18n="nav.settings">НАСТРОЙКИ</a>
     </div>
 
-    <button class="btn-auth" id="navAuthBtn">ЗАГРУЗКА...</button>
+    <div class="nav-actions">
+      <button class="btn-auth" id="navAuthBtn" data-i18n="nav.loading">ЗАГРУЗКА...</button>
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menu"></button>
+    </div>
   </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-nav">
+      <a class="nav-btn" href="index.html" data-i18n="nav.catalog">КАТАЛОГ</a>
+      <a class="nav-btn" href="search.html" data-i18n="nav.search">ПОИСК</a>
+      <a class="nav-btn" href="history.html" data-i18n="nav.history">ИСТОРИЯ</a>
+      <a class="nav-btn active" href="settings.html" data-i18n="nav.settings">НАСТРОЙКИ</a>
+      <button class="btn-auth" id="mobileAuthBtn" data-i18n="nav.loading">ЗАГРУЗКА...</button>
+    </div>
+  </div>
 
   <main class="main">
     <div class="settings-card">
       <div class="settings-section">
-        <h2 class="settings-title">ЦВЕТ ИНТЕРФЕЙСА</h2>
+        <h2 class="settings-title" data-i18n="settings.colorTitle">ЦВЕТ ИНТЕРФЕЙСА</h2>
 
         <div class="color-picker">
           <div class="color-option" data-color="red" style="background:#ff003c" onclick="setTheme('red')"></div>
@@ -69,61 +83,69 @@
       </div>
 
       <div class="settings-section">
-        <h2 class="settings-title">ДАННЫЕ</h2>
+        <h2 class="settings-title" data-i18n="settings.languageTitle">ЯЗЫК ИНТЕРФЕЙСА</h2>
+        <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+          <option value="ru">Русский</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="settings-section">
+        <h2 class="settings-title" data-i18n="settings.dataTitle">ДАННЫЕ</h2>
         <div class="status" style="text-align:left;">
-          <p>Тема: <span id="currentTheme">—</span></p>
-          <p>Аккаунт: <span id="currentUserInfo" style="color:var(--accent-color)">Guest</span></p>
+          <p><span data-i18n="settings.theme">Тема</span>: <span id="currentTheme">—</span></p>
+          <p><span data-i18n="settings.account">Аккаунт</span>: <span id="currentUserInfo" style="color:var(--accent-color)">Guest</span></p>
         </div>
       </div>
 
-      <button class="btn-auth" style="width:100%; margin-top:20px;" onclick="resetToDefault()">СБРОС НАСТРОЕК</button>
+      <button class="btn-auth" style="width:100%; margin-top:20px;" onclick="resetToDefault()" data-i18n="settings.reset">
+        СБРОС НАСТРОЕК
+      </button>
     </div>
   </main>
 
-  <!-- Модалка авторизации -->
   <div class="modal-overlay" id="authModal">
     <div class="auth-card">
       <span class="close-modal" id="closeAuthModal">×</span>
 
       <div id="loginForm">
-        <h2 class="auth-title">ВХОД</h2>
+        <h2 class="auth-title" data-i18n="auth.loginTitle">ВХОД</h2>
         <div class="error-msg" id="loginError"></div>
 
         <div class="input-group">
-          <label>Email</label>
+          <label data-i18n="auth.email">Email</label>
           <input type="email" id="loginUser">
         </div>
 
         <div class="input-group">
-          <label>Пароль</label>
+          <label data-i18n="auth.password">Пароль</label>
           <input type="password" id="loginPass">
         </div>
 
-        <button class="btn-auth" style="width:100%" onclick="authAPI.login()">ВОЙТИ</button>
-        <div class="switch-form" onclick="ui.toggleForms()">Нет аккаунта? Регистрация</div>
+        <button class="btn-auth" style="width:100%" onclick="authAPI.login()" data-i18n="auth.loginBtn">ВОЙТИ</button>
+        <div class="switch-form" onclick="ui.toggleForms()" data-i18n="auth.noAccount">Нет аккаунта? Регистрация</div>
       </div>
 
       <div id="registerForm" style="display:none;">
-        <h2 class="auth-title">РЕГИСТРАЦИЯ</h2>
+        <h2 class="auth-title" data-i18n="auth.registerTitle">РЕГИСТРАЦИЯ</h2>
         <div class="error-msg" id="regError"></div>
 
         <div class="input-group">
-          <label>Email</label>
+          <label data-i18n="auth.email">Email</label>
           <input type="email" id="regUser">
         </div>
 
         <div class="input-group">
-          <label>Пароль</label>
+          <label data-i18n="auth.password">Пароль</label>
           <input type="password" id="regPass">
         </div>
 
-        <button class="btn-auth" style="width:100%" onclick="authAPI.register()">СОЗДАТЬ</button>
-        <div class="switch-form" onclick="ui.toggleForms()">Есть аккаунт? Войти</div>
+        <button class="btn-auth" style="width:100%" onclick="authAPI.register()" data-i18n="auth.registerBtn">СОЗДАТЬ</button>
+        <div class="switch-form" onclick="ui.toggleForms()" data-i18n="auth.hasAccount">Есть аккаунт? Войти</div>
       </div>
     </div>
   </div>
 
-  <!-- Модалка фильма -->
   <div class="modal-overlay" id="movieModal">
     <div class="movie-info-card">
       <span class="close-modal" onclick="kinopoiskAPI.closeModal()">×</span>
@@ -139,21 +161,17 @@
           <div id="modalYear" class="movie-meta">YEAR</div>
 
           <div class="movie-desc-box">
-            <p id="modalDesc">Описание загружается...</p>
+            <p id="modalDesc">...</p>
           </div>
 
-          <!-- Сезоны -->
           <div id="seasonsContainer" class="info-section"></div>
-
-          <!-- Факты -->
           <div id="factsContainer" class="info-section"></div>
 
           <div class="player-wrapper">
-            <div class="player-label">VIDEO UPLINK</div>
+            <div class="player-label" id="playerLabel">VIDEO UPLINK</div>
             <iframe id="modalPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
           </div>
 
-          <!-- Похожие фильмы -->
           <div id="similarsContainer" class="info-section"></div>
         </div>
       </div>

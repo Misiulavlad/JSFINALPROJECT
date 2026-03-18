@@ -4,60 +4,59 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged
-} from "firebase/auth";
+} from 'firebase/auth';
 
 import { kinopoiskAPI } from './apis.js';
+import { t, setLanguage, getCurrentLanguage, applyTranslations } from './lang.js';
 
-// тема
 const themes = {
-  red:    { glow: '255,0,60',   accent: '#ff003c', name: 'Красная' },
-  blue:   { glow: '0,102,255',  accent: '#0066ff', name: 'Синяя' },
-  green:  { glow: '0,204,102',  accent: '#00cc66', name: 'Зеленая' },
-  purple: { glow: '153,51,255', accent: '#9933ff', name: 'Фиолетовая' },
-  cyan:   { glow: '0,204,204',  accent: '#00cccc', name: 'Голубая' },
-  orange: { glow: '255,102,0',  accent: '#ff6600', name: 'Оранжевая' },
-  pink:   { glow: '255,51,153', accent: '#ff3399', name: 'Розовая' },
-  yellow: { glow: '255,204,0',  accent: '#ffcc00', name: 'Желтая' }
+  red:    { glow: '255,0,60',   accent: '#ff003c', nameKey: 'themes.red' },
+  blue:   { glow: '0,102,255',  accent: '#0066ff', nameKey: 'themes.blue' },
+  green:  { glow: '0,204,102',  accent: '#00cc66', nameKey: 'themes.green' },
+  purple: { glow: '153,51,255', accent: '#9933ff', nameKey: 'themes.purple' },
+  cyan:   { glow: '0,204,204',  accent: '#00cccc', nameKey: 'themes.cyan' },
+  orange: { glow: '255,102,0',  accent: '#ff6600', nameKey: 'themes.orange' },
+  pink:   { glow: '255,51,153', accent: '#ff3399', nameKey: 'themes.pink' },
+  yellow: { glow: '255,204,0',  accent: '#ffcc00', nameKey: 'themes.yellow' }
 };
 
 function setTheme(themeName) {
-  const t = themes[themeName];
-  if (!t) return;
+  const tTheme = themes[themeName];
+  if (!tTheme) return;
 
   const root = document.documentElement;
-  root.style.setProperty('--glow-color', t.glow);
-  root.style.setProperty('--accent-color', t.accent);
-  root.style.setProperty('--card-border', `rgba(${t.glow},0.4)`);
-  root.style.setProperty('--blob-gradient', `radial-gradient(circle, rgba(${t.glow},0.4) 0%, rgba(${t.glow},0) 70%)`);
+  root.style.setProperty('--glow-color', tTheme.glow);
+  root.style.setProperty('--accent-color', tTheme.accent);
+  root.style.setProperty('--card-border', `rgba(${tTheme.glow},0.4)`);
+  root.style.setProperty('--blob-gradient', `radial-gradient(circle, rgba(${tTheme.glow},0.4) 0%, rgba(${tTheme.glow},0) 70%)`);
 
   document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
   const active = document.querySelector(`.color-option[data-color="${themeName}"]`);
   if (active) active.classList.add('active');
 
   const statusInfo = document.getElementById('statusInfo');
-  if (statusInfo) statusInfo.textContent = `SYSTEM: ONLINE | THEME: ${themeName.toUpperCase()}`;
+  if (statusInfo) statusInfo.textContent = t('search.systemOnline');
 
   const themeNameEl = document.getElementById('currentTheme');
-  if (themeNameEl) themeNameEl.textContent = t.name;
+  if (themeNameEl) themeNameEl.textContent = t(tTheme.nameKey);
 
   localStorage.setItem('theme', themeName);
 }
 
-// авторизация
 const authAPI = {
   register: async () => {
     const email = document.getElementById('regUser')?.value.trim();
     const password = document.getElementById('regPass')?.value.trim();
     const errBox = document.getElementById('regError');
 
-    if (!email || !password) return ui.showError(errBox, "Введите Email и пароль");
+    if (!email || !password) return ui.showError(errBox, t('auth.enterCredentials'));
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       ui.closeModal();
-      alert("Аккаунт создан.");
+      alert(t('auth.accountCreated'));
     } catch (e) {
-      ui.showError(errBox, "Ошибка: " + e.code);
+      ui.showError(errBox, `${t('auth.errorPrefix')}${e.code}`);
     }
   },
 
@@ -66,11 +65,13 @@ const authAPI = {
     const password = document.getElementById('loginPass')?.value.trim();
     const errBox = document.getElementById('loginError');
 
+    if (!email || !password) return ui.showError(errBox, t('auth.enterCredentials'));
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       ui.closeModal();
     } catch (e) {
-      ui.showError(errBox, "Ошибка: " + e.code);
+      ui.showError(errBox, `${t('auth.errorPrefix')}${e.code}`);
     }
   },
 
@@ -79,16 +80,20 @@ const authAPI = {
   }
 };
 
-// UI
 const ui = {
   get modal() { return document.getElementById('authModal'); },
   get navBtn() { return document.getElementById('navAuthBtn'); },
+  get mobileNavBtn() { return document.getElementById('mobileAuthBtn'); },
+  get mobileMenu() { return document.getElementById('mobileMenu'); },
+  get mobileMenuToggle() { return document.getElementById('mobileMenuToggle'); },
 
   openModal: () => ui.modal?.classList.add('active'),
 
   closeModal: () => {
     ui.modal?.classList.remove('active');
-    document.querySelectorAll('.error-msg').forEach(el => (el.style.display = 'none'));
+    document.querySelectorAll('.error-msg').forEach(el => {
+      el.style.display = 'none';
+    });
   },
 
   toggleForms: () => {
@@ -112,60 +117,87 @@ const ui = {
 
     if (user) {
       if (ui.navBtn) {
-        ui.navBtn.innerText = "ВЫЙТИ";
+        ui.navBtn.innerText = t('nav.logout');
         ui.navBtn.onclick = authAPI.logout;
+      }
+      if (ui.mobileNavBtn) {
+        ui.mobileNavBtn.innerText = t('nav.logout');
+        ui.mobileNavBtn.onclick = authAPI.logout;
       }
       if (userInfo) userInfo.textContent = user.email;
     } else {
       if (ui.navBtn) {
-        ui.navBtn.innerText = "ВОЙТИ";
+        ui.navBtn.innerText = t('nav.login');
         ui.navBtn.onclick = ui.openModal;
       }
-      if (userInfo) userInfo.textContent = 'Guest';
+      if (ui.mobileNavBtn) {
+        ui.mobileNavBtn.innerText = t('nav.login');
+        ui.mobileNavBtn.onclick = () => {
+          ui.closeMobileMenu();
+          ui.openModal();
+        };
+      }
+      if (userInfo) userInfo.textContent = t('settings.guest');
     }
+  },
+
+  toggleMobileMenu: () => {
+    ui.mobileMenu?.classList.toggle('active');
+    ui.mobileMenuToggle?.classList.toggle('active');
+  },
+
+  closeMobileMenu: () => {
+    ui.mobileMenu?.classList.remove('active');
+    ui.mobileMenuToggle?.classList.remove('active');
   }
 };
 
-// rfnfkju
 function loadCatalog() {
-  const user = window.currentUser; 
-
-  if (!user) {
-    kinopoiskAPI.loadCatalog();
-  } else {
-    kinopoiskAPI.loadCatalog();
-  }
+  kinopoiskAPI.loadCatalog();
 }
 
-// поиск
 function performSearch() {
   const query = document.getElementById('globalSearch')?.value.trim();
-  if (!query) return alert("Введите название для поиска!");
+  if (!query) return alert(t('search.enterQuery'));
   kinopoiskAPI.searchByKeyword(query);
 }
 
-// сброс
 function resetToDefault() {
   localStorage.removeItem('theme');
   setTheme('red');
 }
 
-// история просмотров
+function changeLanguage(lang) {
+  setLanguage(lang);
+  applyTranslations();
+  syncDynamicTexts();
+  historyManager.renderHistory();
+  if (document.getElementById('moviesGrid')) loadCatalog();
+}
+
+function syncDynamicTexts() {
+  const currentTheme = localStorage.getItem('theme') || 'red';
+  setTheme(currentTheme);
+  ui.updateAuthUI(window.currentUser || null);
+
+  const playerLabel = document.getElementById('playerLabel');
+  if (playerLabel) playerLabel.textContent = t('movie.videoUplink');
+
+  const langSelect = document.getElementById('languageSelect');
+  if (langSelect) langSelect.value = getCurrentLanguage();
+}
+
 const historyManager = {
-  // Получить историю
   getHistory: () => {
     const saved = localStorage.getItem('movieHistory');
     return saved ? JSON.parse(saved) : [];
   },
 
-  // Сохранить фильм в историю
   addToHistory: (movie) => {
     let history = historyManager.getHistory();
-    
-    // Удаляем дубликаты (если фильм уже был)
+
     history = history.filter(item => item.filmId !== movie.filmId);
-    
-    // Добавляем в начало массива
+
     history.unshift({
       filmId: movie.filmId,
       title: movie.title,
@@ -174,21 +206,18 @@ const historyManager = {
       poster: movie.poster,
       viewedAt: new Date().toISOString()
     });
-    
-    // Ограничивание
+
     if (history.length > 50) history = history.slice(0, 50);
-    
+
     localStorage.setItem('movieHistory', JSON.stringify(history));
   },
 
-  // Очистить всю историю
   clearHistory: () => {
-    if (!confirm('Удалить всю историю просмотров?')) return;
+    if (!confirm(t('history.deleteConfirm'))) return;
     localStorage.removeItem('movieHistory');
     historyManager.renderHistory();
   },
 
-  // Удалить один фильм из истории
   removeFromHistory: (filmId) => {
     let history = historyManager.getHistory();
     history = history.filter(item => item.filmId !== filmId);
@@ -196,7 +225,6 @@ const historyManager = {
     historyManager.renderHistory();
   },
 
-  // Отобразить историю на странице
   renderHistory: () => {
     const container = document.getElementById('historyGrid');
     if (!container) return;
@@ -207,8 +235,8 @@ const historyManager = {
       container.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">📽️</div>
-          <h2>История пуста</h2>
-          <p>Фильмы, которые вы просматривали, появятся здесь</p>
+          <h2>${t('history.empty')}</h2>
+          <p>${t('history.emptyDesc')}</p>
         </div>
       `;
       return;
@@ -225,19 +253,19 @@ const historyManager = {
                onclick="kinopoiskAPI.openFilmModal('${movie.filmId}')">
             ${movie.poster ? '' : '<div class="no-poster">?</div>'}
           </div>
-          
+
           <div class="history-info" onclick="kinopoiskAPI.openFilmModal('${movie.filmId}')">
             <div class="history-title">${movie.title}</div>
             <div class="history-meta">
-              <span>${movie.year || '—'}</span>
-              <span>★ ${movie.rating || '—'}</span>
+              <span>${movie.year || t('common.yearFallback')}</span>
+              <span>★ ${movie.rating || t('common.ratingFallback')}</span>
             </div>
             <div class="history-date">${timeAgo}</div>
           </div>
 
-          <button class="history-delete" 
+          <button class="history-delete"
                   onclick="event.stopPropagation(); historyManager.removeFromHistory('${movie.filmId}')"
-                  title="Удалить из истории">
+                  title="${t('history.deleteTitle')}">
             ×
           </button>
         </div>
@@ -245,20 +273,18 @@ const historyManager = {
     }).join('');
   },
 
-  // Вспомогательная функция: "сколько времени назад"
   getTimeAgo: (date) => {
     const seconds = Math.floor((new Date() - date) / 1000);
-    
-    if (seconds < 60) return 'только что';
-    if (seconds < 3600) return `${Math.floor(seconds / 60)} мин назад`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)} ч назад`;
-    if (seconds < 604800) return `${Math.floor(seconds / 86400)} дн назад`;
-    
-    return date.toLocaleDateString('ru-RU');
+
+    if (seconds < 60) return t('history.justNow');
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} ${t('history.minAgo')}`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} ${t('history.hourAgo')}`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)} ${t('history.dayAgo')}`;
+
+    return date.toLocaleDateString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US');
   }
 };
 
-// глобальные функции
 window.setTheme = setTheme;
 window.resetToDefault = resetToDefault;
 window.performSearch = performSearch;
@@ -266,27 +292,37 @@ window.authAPI = authAPI;
 window.ui = ui;
 window.kinopoiskAPI = kinopoiskAPI;
 window.historyManager = historyManager;
+window.changeLanguage = changeLanguage;
 
-// инициализация
 document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
   setTheme(localStorage.getItem('theme') || 'red');
+  syncDynamicTexts();
 
   onAuthStateChanged(auth, (user) => {
     window.currentUser = user;
     ui.updateAuthUI(user);
-    
-    // Если на главной странице — перезагружаем каталог
-    if (document.getElementById('moviesGrid')) {
-      loadCatalog();
-    }
+
+    if (document.getElementById('moviesGrid')) loadCatalog();
   });
+
   document.getElementById('closeAuthModal')?.addEventListener('click', ui.closeModal);
+  document.getElementById('mobileMenuToggle')?.addEventListener('click', ui.toggleMobileMenu);
+
+  document.querySelectorAll('.mobile-menu a').forEach(link => {
+    link.addEventListener('click', ui.closeMobileMenu);
+  });
 
   window.addEventListener('click', (e) => {
     if (ui.modal && e.target === ui.modal) ui.closeModal();
 
     const movieModal = document.getElementById('movieModal');
     if (movieModal && e.target === movieModal) kinopoiskAPI.closeModal();
+
+    if (ui.mobileMenu && ui.mobileMenu.classList.contains('active')) {
+      const insideMenu = e.target.closest('.mobile-menu, .mobile-menu-toggle');
+      if (!insideMenu) ui.closeMobileMenu();
+    }
   });
 
   const searchInput = document.getElementById('globalSearch');
@@ -296,10 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  loadCatalog();
-  
-// прогружаем историю
-  if (window.location.pathname.includes('history.html')) {
-    historyManager.renderHistory();
-  }
+  if (document.getElementById('moviesGrid')) loadCatalog();
+  if (window.location.pathname.includes('history.html')) historyManager.renderHistory();
 });

@@ -1,47 +1,52 @@
+import { t } from './lang.js';
+
 export const kinopoiskAPI = {
   key: '97902904-1707-4ced-9ece-d2c5a54c9421',
 
-// поиск по слову
   searchByKeyword: async (query) => {
     const url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(query)}`;
     const resultContainer = document.getElementById('apiResult');
-    
-    if(resultContainer) resultContainer.innerHTML = '<div class="status">SCANNING DATABASE...</div>';
-    
+
+    if (resultContainer) {
+      resultContainer.innerHTML = `<div class="status">${t('search.scanning')}</div>`;
+    }
+
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: { 
-          'X-API-KEY': kinopoiskAPI.key, 
-          'Content-Type': 'application/json' 
-        },
+        headers: {
+          'X-API-KEY': kinopoiskAPI.key,
+          'Content-Type': 'application/json'
+        }
       });
+
       const data = await response.json();
       kinopoiskAPI.renderSearchResults(data);
     } catch (error) {
       console.error(error);
-      if(resultContainer) resultContainer.innerHTML = `<div class="status" style="color:red">ERROR: ${error.message}</div>`;
+      if (resultContainer) {
+        resultContainer.innerHTML = `<div class="status" style="color:red">${t('movie.errorLoading')}: ${error.message}</div>`;
+      }
     }
   },
 
-// результаты
   renderSearchResults: (data) => {
     const container = document.getElementById('apiResult');
     if (!container) return;
-    
+
     if (!data.films || data.films.length === 0) {
-      container.innerHTML = '<div class="status">RESULT: 0 MATCHES.</div>';
+      container.innerHTML = `<div class="status">${t('search.noMatches')}</div>`;
       return;
     }
-    
-    let html = `<div class="status" style="margin-bottom:10px;">FOUND: ${data.films.length} OBJECTS</div>`;
-    
+
+    let html = `<div class="status" style="margin-bottom:10px;">${t('search.found')}: ${data.films.length} ${t('search.objects')}</div>`;
+
     data.films.forEach(film => {
-      const year = film.year || 'N/A';
+      const year = film.year || t('common.na');
       const rating = film.rating && film.rating !== 'null' ? film.rating : '-';
-      const title = film.nameRu || film.nameEn || 'UNNAMED';
+      const title = film.nameRu || film.nameEn || t('movie.unnamed');
       const poster = film.posterUrlPreview || '';
-      
+
       html += `
         <div class="movie-card enhanced" onclick="kinopoiskAPI.openFilmModal('${film.filmId}')">
           <div class="movie-poster" style="background-image: url('${poster}')">
@@ -55,16 +60,15 @@ export const kinopoiskAPI = {
         </div>
       `;
     });
-    
+
     container.innerHTML = html;
   },
 
-// популярное
   loadCatalog: async () => {
     const grid = document.getElementById('moviesGrid');
     if (!grid) return;
 
-    grid.innerHTML = '<div class="status">ЗАГРУЗКА КАТАЛОГА...</div>';
+    grid.innerHTML = `<div class="status">${t('catalog.loading')}</div>`;
 
     try {
       const url = 'https://kinopoiskapiunofficial.tech/api/v2.2/films/collections?type=TOP_250_MOVIES&page=1';
@@ -74,14 +78,14 @@ export const kinopoiskAPI = {
       const data = await response.json();
 
       if (!data.items || data.items.length === 0) {
-        grid.innerHTML = '<div class="status">Каталог пуст</div>';
+        grid.innerHTML = `<div class="status">${t('catalog.empty')}</div>`;
         return;
       }
 
       grid.innerHTML = data.items.map(film => {
-        const title = film.nameRu || film.nameEn || 'Без названия';
-        const year = film.year || '—';
-        const rating = film.ratingKinopoisk || film.ratingImdb || '—';
+        const title = film.nameRu || film.nameEn || t('catalog.unnamed');
+        const year = film.year || t('common.yearFallback');
+        const rating = film.ratingKinopoisk || film.ratingImdb || t('common.ratingFallback');
         const poster = film.posterUrlPreview || '';
 
         return `
@@ -97,63 +101,59 @@ export const kinopoiskAPI = {
           </div>
         `;
       }).join('');
-
     } catch (error) {
       console.error(error);
-      grid.innerHTML = `<div class="status" style="color:red">ОШИБКА: ${error.message}</div>`;
+      grid.innerHTML = `<div class="status" style="color:red">${t('movie.errorLoading')}: ${error.message}</div>`;
     }
   },
 
-  // модалка фильма
   openFilmModal: async (filmId) => {
     const modal = document.getElementById('movieModal');
-    modal.classList.add('active');
-    
-    // Сброс
-    document.getElementById('modalTitle').textContent = "ЗАГРУЗКА...";
-    document.getElementById('modalDesc').textContent = "Поиск данных...";
-    document.getElementById('modalPoster').src = ""; 
-    document.getElementById('modalRating').textContent = "-";
-    document.getElementById('modalYear').textContent = "";
-    
-    // Скрываем плеер
-    const player = document.getElementById('modalPlayer');
-    player.src = "";
-    player.style.display = 'none';
-    
-    const oldMsg = document.getElementById('videoControls');
-    if(oldMsg) oldMsg.remove();
+    if (!modal) return;
 
-    // Очищаем доп. секции
+    modal.classList.add('active');
+
+    document.getElementById('modalTitle').textContent = t('movie.loading');
+    document.getElementById('modalDesc').textContent = t('movie.searchingData');
+    document.getElementById('modalPoster').src = '';
+    document.getElementById('modalRating').textContent = '-';
+    document.getElementById('modalYear').textContent = '';
+
+    const player = document.getElementById('modalPlayer');
+    player.src = '';
+    player.style.display = 'none';
+
+    const oldMsg = document.getElementById('videoControls');
+    if (oldMsg) oldMsg.remove();
+
     const seasonsContainer = document.getElementById('seasonsContainer');
     const factsContainer = document.getElementById('factsContainer');
     const similarsContainer = document.getElementById('similarsContainer');
+
     if (seasonsContainer) seasonsContainer.innerHTML = '';
     if (factsContainer) factsContainer.innerHTML = '';
     if (similarsContainer) similarsContainer.innerHTML = '';
-    
+
     try {
-      //  ЗАПРОС 1: Основная информация 
       const urlInfo = `https://kinopoiskapiunofficial.tech/api/v2.2/films/${filmId}`;
       const responseInfo = await fetch(urlInfo, {
         headers: { 'X-API-KEY': kinopoiskAPI.key }
       });
       const data = await responseInfo.json();
-      
-      const name = data.nameRu || data.nameEn || data.nameOriginal || 'Без названия';
+
+      const name = data.nameRu || data.nameEn || data.nameOriginal || t('movie.unnamed');
       const genres = data.genres ? data.genres.map(g => g.genre).join(', ') : '-';
       const countries = data.countries ? data.countries.map(c => c.country).join(', ') : '-';
-      
+
       document.getElementById('modalTitle').textContent = name;
       document.getElementById('modalYear').textContent = `${data.year || '—'} | ${genres} | ${countries}`;
-      document.getElementById('modalRating').textContent = data.ratingKinopoisk || data.ratingImdb || "-";
-      document.getElementById('modalDesc').textContent = data.description || "Описание отсутствует.";
+      document.getElementById('modalRating').textContent = data.ratingKinopoisk || data.ratingImdb || '-';
+      document.getElementById('modalDesc').textContent = data.description || t('movie.noDescription');
       document.getElementById('modalPoster').src = data.posterUrl || '';
 
-      // Сохраняем в историю
       if (window.historyManager) {
         window.historyManager.addToHistory({
-          filmId: filmId,
+          filmId,
           title: name,
           year: data.year,
           rating: data.ratingKinopoisk || data.ratingImdb || null,
@@ -161,15 +161,14 @@ export const kinopoiskAPI = {
         });
       }
 
-      //  ЗАПРОС 2: Видео
       const urlVideo = `https://kinopoiskapiunofficial.tech/api/v2.2/films/${filmId}/videos`;
       const responseVideo = await fetch(urlVideo, {
         headers: { 'X-API-KEY': kinopoiskAPI.key }
       });
       const dataVideo = await responseVideo.json();
-      
-      let finalUrl = "";
-      
+
+      let finalUrl = '';
+
       if (dataVideo.items && dataVideo.items.length > 0) {
         const youtubeVideo = dataVideo.items.find(v => v.site === 'YOUTUBE' && v.url.includes('watch?v='));
         if (youtubeVideo) {
@@ -177,61 +176,35 @@ export const kinopoiskAPI = {
           finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         }
       }
-      
+
       if (!finalUrl) {
         finalUrl = `https://www.youtube.com/embed?listType=search&list=trailer+${encodeURIComponent(name)}&autoplay=1`;
       }
-      
+
       const playerWrapper = document.querySelector('.player-wrapper');
       const controls = document.createElement('div');
       controls.id = 'videoControls';
-      controls.style.padding = '40px';
-      controls.style.textAlign = 'center';
-      
+      controls.className = 'video-controls';
+
       controls.innerHTML = `
-        <div style="opacity:0.7; margin-bottom:15px; font-size:12px; color: #fff;">МЕДИА-ФАЙЛ ГОТОВ</div>
-        <button onclick="kinopoiskAPI.playVideo('${finalUrl}')" 
-          style="
-            padding:12px 40px; 
-            background:var(--accent-color); 
-            color:#000; 
-            border:none;
-            cursor:pointer;
-            font-weight:900; 
-            font-size: 14px;
-            font-family:'Orbitron';
-            border-radius: 4px;
-            box-shadow: 0 0 20px rgba(var(--glow-color), 0.6);
-            transition: transform 0.2s;
-          "
-          onmouseover="this.style.transform='scale(1.05)'"
-          onmouseout="this.style.transform='scale(1)'"
-        >
-          СМОТРЕТЬ ТРЕЙЛЕР
+        <div class="video-controls__status">${t('movie.mediaReady')}</div>
+        <button class="btn-primary video-controls__button" onclick="kinopoiskAPI.playVideo('${finalUrl}')">
+          ${t('movie.watchTrailer')}
         </button>
       `;
-      
+
       playerWrapper.appendChild(controls);
 
-      // ЗАПРОС 3: Сезоны
-      if (data.serial) {
-        kinopoiskAPI.loadSeasons(filmId);
-      }
-
-      // ЗАПРОС 4: Факты
+      if (data.serial) kinopoiskAPI.loadSeasons(filmId);
       kinopoiskAPI.loadFacts(filmId);
-
-      // ЗАПРОС 5: Похожие фильмы
       kinopoiskAPI.loadSimilars(filmId);
-      
     } catch (error) {
       console.error(error);
-      document.getElementById('modalTitle').textContent = "ОШИБКА ЗАГРУЗКИ";
+      document.getElementById('modalTitle').textContent = t('movie.errorLoading');
       document.getElementById('modalDesc').textContent = error.message;
     }
   },
 
-// загрузка сезонов
   loadSeasons: async (filmId) => {
     const container = document.getElementById('seasonsContainer');
     if (!container) return;
@@ -244,17 +217,17 @@ export const kinopoiskAPI = {
       const data = await response.json();
 
       if (!data.items || data.items.length === 0) {
-        container.innerHTML = '<div class="info-block-empty">Информация о сезонах недоступна</div>';
+        container.innerHTML = `<div class="info-block-empty">${t('movie.noSeasons')}</div>`;
         return;
       }
 
-      let html = '<div class="info-block-title">📺 СЕЗОНЫ</div>';
-      
+      let html = `<div class="info-block-title">${t('movie.seasons')}</div>`;
+
       data.items.forEach(season => {
         html += `
           <div class="season-item">
-            <div class="season-number">Сезон ${season.number}</div>
-            <div class="season-episodes">${season.episodes.length} эпизодов</div>
+            <div class="season-number">${t('movie.season')} ${season.number}</div>
+            <div class="season-episodes">${season.episodes.length} ${t('movie.episodes')}</div>
           </div>
         `;
       });
@@ -265,7 +238,6 @@ export const kinopoiskAPI = {
     }
   },
 
-// загрузка фактов
   loadFacts: async (filmId) => {
     const container = document.getElementById('factsContainer');
     if (!container) return;
@@ -278,14 +250,14 @@ export const kinopoiskAPI = {
       const data = await response.json();
 
       if (!data.items || data.items.length === 0) {
-        container.innerHTML = '<div class="info-block-empty">Фактов пока нет</div>';
+        container.innerHTML = `<div class="info-block-empty">${t('movie.noFacts')}</div>`;
         return;
       }
 
-      let html = '<div class="info-block-title">💡 ИНТЕРЕСНЫЕ ФАКТЫ</div>';
-      
+      let html = `<div class="info-block-title">${t('movie.facts')}</div>`;
+
       data.items.slice(0, 5).forEach(fact => {
-        const cleanText = fact.text.replace(/<\/?[^>]+(>|$)/g, ""); // Удаляем HTML теги
+        const cleanText = fact.text.replace(/<\/?[^>]+(>|$)/g, '');
         html += `<div class="fact-item">${cleanText}</div>`;
       });
 
@@ -295,7 +267,6 @@ export const kinopoiskAPI = {
     }
   },
 
-// загрузка похожих
   loadSimilars: async (filmId) => {
     const container = document.getElementById('similarsContainer');
     if (!container) return;
@@ -308,14 +279,14 @@ export const kinopoiskAPI = {
       const data = await response.json();
 
       if (!data.items || data.items.length === 0) {
-        container.innerHTML = '<div class="info-block-empty">Похожих фильмов не найдено</div>';
+        container.innerHTML = `<div class="info-block-empty">${t('movie.noSimilars')}</div>`;
         return;
       }
 
-      let html = '<div class="info-block-title">🎬 ПОХОЖИЕ ФИЛЬМЫ</div><div class="similars-grid">';
-      
+      let html = `<div class="info-block-title">${t('movie.similars')}</div><div class="similars-grid">`;
+
       data.items.slice(0, 6).forEach(film => {
-        const title = film.nameRu || film.nameEn || 'Без названия';
+        const title = film.nameRu || film.nameEn || t('movie.unnamed');
         const poster = film.posterUrlPreview || '';
 
         html += `
@@ -335,27 +306,28 @@ export const kinopoiskAPI = {
     }
   },
 
-  // запустить видео
   playVideo: (url) => {
     const player = document.getElementById('modalPlayer');
     const controls = document.getElementById('videoControls');
-    
+
     player.src = url;
     player.style.display = 'block';
-    
-    if(controls) controls.remove();
+
+    if (controls) controls.remove();
   },
 
-  // закрыть модалку
   closeModal: () => {
     const modal = document.getElementById('movieModal');
+    if (!modal) return;
+
     modal.classList.remove('active');
-    
+
     setTimeout(() => {
       const player = document.getElementById('modalPlayer');
-      player.src = ""; 
+      if (player) player.src = '';
+
       const controls = document.getElementById('videoControls');
-      if(controls) controls.remove();
+      if (controls) controls.remove();
     }, 300);
   }
 };
