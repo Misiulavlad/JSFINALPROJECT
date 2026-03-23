@@ -43,43 +43,6 @@ function setTheme(themeName) {
   localStorage.setItem('theme', themeName);
 }
 
-const authAPI = {
-  register: async () => {
-    const email = document.getElementById('regUser')?.value.trim();
-    const password = document.getElementById('regPass')?.value.trim();
-    const errBox = document.getElementById('regError');
-
-    if (!email || !password) return ui.showError(errBox, t('auth.enterCredentials'));
-
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      ui.closeModal();
-      alert(t('auth.accountCreated'));
-    } catch (e) {
-      ui.showError(errBox, `${t('auth.errorPrefix')}${e.code}`);
-    }
-  },
-
-  login: async () => {
-    const email = document.getElementById('loginUser')?.value.trim();
-    const password = document.getElementById('loginPass')?.value.trim();
-    const errBox = document.getElementById('loginError');
-
-    if (!email || !password) return ui.showError(errBox, t('auth.enterCredentials'));
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      ui.closeModal();
-    } catch (e) {
-      ui.showError(errBox, `${t('auth.errorPrefix')}${e.code}`);
-    }
-  },
-
-  logout: async () => {
-    await signOut(auth);
-  }
-};
-
 const ui = {
   get modal() { return document.getElementById('authModal'); },
   get navBtn() { return document.getElementById('navAuthBtn'); },
@@ -87,13 +50,47 @@ const ui = {
   get mobileMenu() { return document.getElementById('mobileMenu'); },
   get mobileMenuToggle() { return document.getElementById('mobileMenuToggle'); },
 
-  openModal: () => ui.modal?.classList.add('active'),
+  clearAuthFields: () => {
+    const ids = ['loginUser', 'loginPass', 'regUser', 'regPass'];
+    ids.forEach(id => {
+      const input = document.getElementById(id);
+      if (input) input.value = '';
+    });
+
+    document.querySelectorAll('.error-msg').forEach(el => {
+      el.textContent = '';
+      el.style.display = 'none';
+    });
+  },
+
+  showRegisterForm: () => {
+    const loginForm = document.getElementById('loginForm');
+    const regForm = document.getElementById('registerForm');
+    if (!loginForm || !regForm) return;
+
+    loginForm.style.display = 'none';
+    regForm.style.display = 'block';
+  },
+
+  showLoginForm: () => {
+    const loginForm = document.getElementById('loginForm');
+    const regForm = document.getElementById('registerForm');
+    if (!loginForm || !regForm) return;
+
+    loginForm.style.display = 'block';
+    regForm.style.display = 'none';
+  },
+
+  openModal: () => {
+    ui.clearAuthFields();
+    ui.showRegisterForm();
+    ui.modal?.classList.add('active');
+  },
 
   closeModal: () => {
     ui.modal?.classList.remove('active');
-    document.querySelectorAll('.error-msg').forEach(el => {
-      el.style.display = 'none';
-    });
+    ui.clearAuthFields();
+    ui.showRegisterForm();
   },
 
   toggleForms: () => {
@@ -101,9 +98,18 @@ const ui = {
     const regForm = document.getElementById('registerForm');
     if (!loginForm || !regForm) return;
 
-    const loginHidden = loginForm.style.display === 'none';
-    loginForm.style.display = loginHidden ? 'block' : 'none';
-    regForm.style.display = loginHidden ? 'none' : 'block';
+    const registerVisible = regForm.style.display !== 'none';
+
+    if (registerVisible) {
+      ui.showLoginForm();
+    } else {
+      ui.showRegisterForm();
+    }
+
+    document.querySelectorAll('.error-msg').forEach(el => {
+      el.textContent = '';
+      el.style.display = 'none';
+    });
   },
 
   showError: (el, msg) => {
@@ -149,6 +155,49 @@ const ui = {
   closeMobileMenu: () => {
     ui.mobileMenu?.classList.remove('active');
     ui.mobileMenuToggle?.classList.remove('active');
+  }
+};
+
+const authAPI = {
+  register: async () => {
+    const email = document.getElementById('regUser')?.value.trim();
+    const password = document.getElementById('regPass')?.value.trim();
+    const errBox = document.getElementById('regError');
+
+    if (!email || !password) {
+      return ui.showError(errBox, t('auth.enterCredentials'));
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      ui.closeModal();
+      alert(t('auth.accountCreated'));
+    } catch (e) {
+      ui.showError(errBox, `${t('auth.errorPrefix')}${e.code}`);
+    }
+  },
+
+  login: async () => {
+    const email = document.getElementById('loginUser')?.value.trim();
+    const password = document.getElementById('loginPass')?.value.trim();
+    const errBox = document.getElementById('loginError');
+
+    if (!email || !password) {
+      return ui.showError(errBox, t('auth.enterCredentials'));
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      ui.closeModal();
+    } catch (e) {
+      ui.showError(errBox, `${t('auth.errorPrefix')}${e.code}`);
+    }
+  },
+
+  logout: async () => {
+    await signOut(auth);
+    ui.clearAuthFields();
+    ui.showRegisterForm();
   }
 };
 
@@ -248,7 +297,7 @@ const historyManager = {
 
       return `
         <div class="history-card">
-          <div class="history-poster" 
+          <div class="history-poster"
                style="background-image: url('${movie.poster || ''}')"
                onclick="kinopoiskAPI.openFilmModal('${movie.filmId}')">
             ${movie.poster ? '' : '<div class="no-poster">?</div>'}
@@ -298,6 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTranslations();
   setTheme(localStorage.getItem('theme') || 'red');
   syncDynamicTexts();
+  ui.showRegisterForm();
+  ui.clearAuthFields();
 
   onAuthStateChanged(auth, (user) => {
     window.currentUser = user;

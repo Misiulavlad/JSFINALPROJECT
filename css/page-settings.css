@@ -42,10 +42,28 @@
 
 .language-select {
   width: 100%;
-  padding: 12px 14px;
-  background: rgba(0, 0, 0, 0.5);
+  padding: 14px 16px;
+  background: rgba(0, 0, 0, 0.45);
   color: var(--text-main);
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
+  border: 1px solid var(--accent-color);
+  border-radius: 12px;
   outline: none;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  box-shadow: 0 0 20px rgba(var(--glow-color), 0.12);
+  transition: var(--transition-main);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.language-select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 18px rgba(var(--glow-color), 0.4);
+}
+
+.language-select option {
+  background: #0b0b10;
+  color: var(--text-main);
 }
