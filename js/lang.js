@@ -6,7 +6,7 @@ export const translations = {
         search: 'ПОИСК',
         history: 'ИСТОРИЯ',
         settings: 'НАСТРОЙКИ',
-        login: 'ВОЙТИ',
+        login: 'РЕГИСТРАЦИЯ',
         logout: 'ВЫЙТИ',
         loading: 'ЗАГРУЗКА...',
         menu: 'МЕНЮ'
@@ -115,7 +115,7 @@ export const translations = {
         search: 'SEARCH',
         history: 'HISTORY',
         settings: 'SETTINGS',
-        login: 'LOGIN',
+        login: 'REGISTER',
         logout: 'LOGOUT',
         loading: 'LOADING...',
         menu: 'MENU'
