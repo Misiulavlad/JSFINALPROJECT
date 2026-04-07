@@ -1,183 +1,321 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CyberCinema — Settings</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>CyberCinema — Settings</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
 
-  <script>
-    (() => {
-      const themes = {
-        red:{glow:'255,0,60',accent:'#ff003c'}, blue:{glow:'0,102,255',accent:'#0066ff'},
-        green:{glow:'0,204,102',accent:'#00cc66'}, purple:{glow:'153,51,255',accent:'#9933ff'},
-        cyan:{glow:'0,204,204',accent:'#00cccc'}, orange:{glow:'255,102,0',accent:'#ff6600'},
-        pink:{glow:'255,51,153',accent:'#ff3399'}, yellow:{glow:'255,204,0',accent:'#ffcc00'}
-      };
-      const saved = localStorage.getItem('theme') || 'red';
-      const t = themes[saved] || themes.red;
-      const root = document.documentElement;
-      const lang = localStorage.getItem('lang') || 'ru';
-      document.documentElement.lang = lang;
-      root.style.setProperty('--glow-color', t.glow);
-      root.style.setProperty('--accent-color', t.accent);
-      root.style.setProperty('--card-border', `rgba(${t.glow},0.4)`);
-      root.style.setProperty('--blob-gradient', `radial-gradient(circle, rgba(${t.glow},0.4) 0%, rgba(${t.glow},0) 70%)`);
-    })();
-  </script>
+    <script>
+      (() => {
+        const themes = {
+          red: { glow: "255,0,60", accent: "#ff003c" },
+          blue: { glow: "0,102,255", accent: "#0066ff" },
+          green: { glow: "0,204,102", accent: "#00cc66" },
+          purple: { glow: "153,51,255", accent: "#9933ff" },
+          cyan: { glow: "0,204,204", accent: "#00cccc" },
+          orange: { glow: "255,102,0", accent: "#ff6600" },
+          pink: { glow: "255,51,153", accent: "#ff3399" },
+          yellow: { glow: "255,204,0", accent: "#ffcc00" },
+        };
+        const saved = localStorage.getItem("theme") || "red";
+        const t = themes[saved] || themes.red;
+        const root = document.documentElement;
+        const lang = localStorage.getItem("lang") || "ru";
+        document.documentElement.lang = lang;
+        root.style.setProperty("--glow-color", t.glow);
+        root.style.setProperty("--accent-color", t.accent);
+        root.style.setProperty("--card-border", `rgba(${t.glow},0.4)`);
+        root.style.setProperty(
+          "--blob-gradient",
+          `radial-gradient(circle, rgba(${t.glow},0.4) 0%, rgba(${t.glow},0) 70%)`,
+        );
+      })();
+    </script>
 
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/page-settings.css">
-  <link rel="stylesheet" href="css/responsive.css">
-</head>
-<body>
-  <div class="blobs-container">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
-
-  <nav class="navbar">
-    <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
-
-    <div class="nav-center">
-      <a class="nav-btn" href="index.html" data-i18n="nav.catalog">КАТАЛОГ</a>
-      <a class="nav-btn" href="search.html" data-i18n="nav.search">ПОИСК</a>
-      <a class="nav-btn" href="history.html" data-i18n="nav.history">ИСТОРИЯ</a>
-      <a class="nav-btn active" href="settings.html" data-i18n="nav.settings">НАСТРОЙКИ</a>
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/page-settings.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+  </head>
+  <body>
+    <div class="blobs-container">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
     </div>
 
-    <div class="nav-actions">
-      <button class="btn-auth" id="navAuthBtn" data-i18n="nav.loading">ЗАГРУЗКА...</button>
-      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menu"></button>
-    </div>
-  </nav>
+    <nav class="navbar">
+      <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
 
-  <div class="mobile-menu" id="mobileMenu">
-    <div class="mobile-menu-nav">
-      <a class="nav-btn" href="index.html" data-i18n="nav.catalog">КАТАЛОГ</a>
-      <a class="nav-btn" href="search.html" data-i18n="nav.search">ПОИСК</a>
-      <a class="nav-btn" href="history.html" data-i18n="nav.history">ИСТОРИЯ</a>
-      <a class="nav-btn active" href="settings.html" data-i18n="nav.settings">НАСТРОЙКИ</a>
-      <button class="btn-auth" id="mobileAuthBtn" data-i18n="nav.loading">ЗАГРУЗКА...</button>
-    </div>
-  </div>
-
-  <main class="main">
-    <div class="settings-card">
-      <div class="settings-section">
-        <h2 class="settings-title" data-i18n="settings.colorTitle">ЦВЕТ ИНТЕРФЕЙСА</h2>
-
-        <div class="color-picker">
-          <div class="color-option" data-color="red" style="background:#ff003c" onclick="setTheme('red')"></div>
-          <div class="color-option" data-color="blue" style="background:#0066ff" onclick="setTheme('blue')"></div>
-          <div class="color-option" data-color="green" style="background:#00cc66" onclick="setTheme('green')"></div>
-          <div class="color-option" data-color="purple" style="background:#9933ff" onclick="setTheme('purple')"></div>
-          <div class="color-option" data-color="cyan" style="background:#00cccc" onclick="setTheme('cyan')"></div>
-          <div class="color-option" data-color="orange" style="background:#ff6600" onclick="setTheme('orange')"></div>
-          <div class="color-option" data-color="pink" style="background:#ff3399" onclick="setTheme('pink')"></div>
-          <div class="color-option" data-color="yellow" style="background:#ffcc00" onclick="setTheme('yellow')"></div>
-        </div>
+      <div class="nav-center">
+        <a class="nav-btn" href="index.html" data-i18n="nav.catalog">КАТАЛОГ</a>
+        <a class="nav-btn" href="search.html" data-i18n="nav.search">ПОИСК</a>
+        <a class="nav-btn" href="history.html" data-i18n="nav.history"
+          >ИСТОРИЯ</a
+        >
+        <a class="nav-btn active" href="settings.html" data-i18n="nav.settings"
+          >НАСТРОЙКИ</a
+        >
       </div>
 
-      <div class="settings-section">
-        <h2 class="settings-title" data-i18n="settings.languageTitle">ЯЗЫК ИНТЕРФЕЙСА</h2>
-        <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
-          <option value="ru">Русский</option>
-          <option value="en">English</option>
-        </select>
+      <div class="nav-actions">
+        <button class="btn-auth" id="navAuthBtn" data-i18n="nav.loading">
+          ЗАГРУЗКА...
+        </button>
+        <button
+          class="mobile-menu-toggle"
+          id="mobileMenuToggle"
+          aria-label="Menu"
+        ></button>
       </div>
+    </nav>
 
-      <div class="settings-section">
-        <h2 class="settings-title" data-i18n="settings.dataTitle">ДАННЫЕ</h2>
-        <div class="status" style="text-align:left;">
-          <p><span data-i18n="settings.theme">Тема</span>: <span id="currentTheme">—</span></p>
-          <p><span data-i18n="settings.account">Аккаунт</span>: <span id="currentUserInfo" style="color:var(--accent-color)">Guest</span></p>
-        </div>
-      </div>
-
-      <button class="btn-auth" style="width:100%; margin-top:20px;" onclick="resetToDefault()" data-i18n="settings.reset">
-        СБРОС НАСТРОЕК
-      </button>
-    </div>
-  </main>
-
-  <div class="modal-overlay" id="authModal">
-    <div class="auth-card">
-      <span class="close-modal" id="closeAuthModal">×</span>
-
-      <div id="loginForm">
-        <h2 class="auth-title" data-i18n="auth.loginTitle">ВХОД</h2>
-        <div class="error-msg" id="loginError"></div>
-
-        <div class="input-group">
-          <label data-i18n="auth.email">Email</label>
-          <input type="email" id="loginUser">
-        </div>
-
-        <div class="input-group">
-          <label data-i18n="auth.password">Пароль</label>
-          <input type="password" id="loginPass">
-        </div>
-
-        <button class="btn-auth" style="width:100%" onclick="authAPI.login()" data-i18n="auth.loginBtn">ВОЙТИ</button>
-        <div class="switch-form" onclick="ui.toggleForms()" data-i18n="auth.noAccount">Нет аккаунта? Регистрация</div>
-      </div>
-
-      <div id="registerForm" style="display:none;">
-        <h2 class="auth-title" data-i18n="auth.registerTitle">РЕГИСТРАЦИЯ</h2>
-        <div class="error-msg" id="regError"></div>
-
-        <div class="input-group">
-          <label data-i18n="auth.email">Email</label>
-          <input type="email" id="regUser">
-        </div>
-
-        <div class="input-group">
-          <label data-i18n="auth.password">Пароль</label>
-          <input type="password" id="regPass">
-        </div>
-
-        <button class="btn-auth" style="width:100%" onclick="authAPI.register()" data-i18n="auth.registerBtn">СОЗДАТЬ</button>
-        <div class="switch-form" onclick="ui.toggleForms()" data-i18n="auth.hasAccount">Есть аккаунт? Войти</div>
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-nav">
+        <a class="nav-btn" href="index.html" data-i18n="nav.catalog">КАТАЛОГ</a>
+        <a class="nav-btn" href="search.html" data-i18n="nav.search">ПОИСК</a>
+        <a class="nav-btn" href="history.html" data-i18n="nav.history"
+          >ИСТОРИЯ</a
+        >
+        <a class="nav-btn active" href="settings.html" data-i18n="nav.settings"
+          >НАСТРОЙКИ</a
+        >
+        <button class="btn-auth" id="mobileAuthBtn" data-i18n="nav.loading">
+          ЗАГРУЗКА...
+        </button>
       </div>
     </div>
-  </div>
 
-  <div class="modal-overlay" id="movieModal">
-    <div class="movie-info-card">
-      <span class="close-modal" onclick="kinopoiskAPI.closeModal()">×</span>
+    <main class="main">
+      <div class="settings-card">
+        <div class="settings-section">
+          <h2 class="settings-title" data-i18n="settings.colorTitle">
+            ЦВЕТ ИНТЕРФЕЙСА
+          </h2>
 
-      <div class="movie-content-wrapper">
-        <div class="movie-poster-col">
-          <img id="modalPoster" src="" alt="Poster" class="full-poster">
-          <div class="modal-rating" id="modalRating">0.0</div>
+          <div class="color-picker">
+            <div
+              class="color-option"
+              data-color="red"
+              style="background: #ff003c"
+              onclick="setTheme('red')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="blue"
+              style="background: #0066ff"
+              onclick="setTheme('blue')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="green"
+              style="background: #00cc66"
+              onclick="setTheme('green')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="purple"
+              style="background: #9933ff"
+              onclick="setTheme('purple')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="cyan"
+              style="background: #00cccc"
+              onclick="setTheme('cyan')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="orange"
+              style="background: #ff6600"
+              onclick="setTheme('orange')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="pink"
+              style="background: #ff3399"
+              onclick="setTheme('pink')"
+            ></div>
+            <div
+              class="color-option"
+              data-color="yellow"
+              style="background: #ffcc00"
+              onclick="setTheme('yellow')"
+            ></div>
+          </div>
         </div>
 
-        <div class="movie-info-col">
-          <h2 id="modalTitle" class="movie-big-title">TITLE</h2>
-          <div id="modalYear" class="movie-meta">YEAR</div>
+        <div class="settings-section">
+          <h2 class="settings-title" data-i18n="settings.languageTitle">
+            ЯЗЫК ИНТЕРФЕЙСА
+          </h2>
+          <select
+            id="languageSelect"
+            class="language-select"
+            onchange="changeLanguage(this.value)"
+          >
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+          </select>
+        </div>
 
-          <div class="movie-desc-box">
-            <p id="modalDesc">...</p>
+        <div class="settings-section">
+          <h2 class="settings-title" data-i18n="settings.dataTitle">ДАННЫЕ</h2>
+          <div class="status" style="text-align: left">
+            <p>
+              <span data-i18n="settings.theme">Тема</span>:
+              <span id="currentTheme">—</span>
+            </p>
+            <p>
+              <span data-i18n="settings.account">Аккаунт</span>:
+              <span id="currentUserInfo" style="color: var(--accent-color)"
+                >Guest</span
+              >
+            </p>
+          </div>
+        </div>
+
+        <button
+          class="btn-auth"
+          style="width: 100%; margin-top: 20px"
+          onclick="resetToDefault()"
+          data-i18n="settings.reset"
+        >
+          СБРОС НАСТРОЕК
+        </button>
+
+        <!-- прикольчик -->
+
+<a href="#" class="boom" onclick="openBoomVideo(event)">
+  <strong>взрыв</strong>
+</a>
+
+<div id="boomPlayerModal" class="boom-player-modal">
+  <div id="boomYoutubePlayer" class="boom-frame"></div>
+</div>
+
+
+
+</div>
+
+</div>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="authModal">
+      <div class="auth-card">
+        <span class="close-modal" id="closeAuthModal">×</span>
+
+        <div id="loginForm">
+          <h2 class="auth-title" data-i18n="auth.loginTitle">ВХОД</h2>
+          <div class="error-msg" id="loginError"></div>
+
+          <div class="input-group">
+            <label data-i18n="auth.email">Email</label>
+            <input type="email" id="loginUser" />
           </div>
 
-          <div id="seasonsContainer" class="info-section"></div>
-          <div id="factsContainer" class="info-section"></div>
-
-          <div class="player-wrapper">
-            <div class="player-label" id="playerLabel">VIDEO UPLINK</div>
-            <iframe id="modalPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          <div class="input-group">
+            <label data-i18n="auth.password">Пароль</label>
+            <input type="password" id="loginPass" />
           </div>
 
-          <div id="similarsContainer" class="info-section"></div>
+          <button
+            class="btn-auth"
+            style="width: 100%"
+            onclick="authAPI.login()"
+            data-i18n="auth.loginBtn"
+          >
+            ВОЙТИ
+          </button>
+          <div
+            class="switch-form"
+            onclick="ui.toggleForms()"
+            data-i18n="auth.noAccount"
+          >
+            Нет аккаунта? Регистрация
+          </div>
+        </div>
+
+        <div id="registerForm" style="display: none">
+          <h2 class="auth-title" data-i18n="auth.registerTitle">РЕГИСТРАЦИЯ</h2>
+          <div class="error-msg" id="regError"></div>
+
+          <div class="input-group">
+            <label data-i18n="auth.email">Email</label>
+            <input type="email" id="regUser" />
+          </div>
+
+          <div class="input-group">
+            <label data-i18n="auth.password">Пароль</label>
+            <input type="password" id="regPass" />
+          </div>
+
+          <button
+            class="btn-auth"
+            style="width: 100%"
+            onclick="authAPI.register()"
+            data-i18n="auth.registerBtn"
+          >
+            СОЗДАТЬ
+          </button>
+          <div
+            class="switch-form"
+            onclick="ui.toggleForms()"
+            data-i18n="auth.hasAccount"
+          >
+            Есть аккаунт? Войти
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script type="module" src="js/app.js"></script>
-</body>
+    <div class="modal-overlay" id="movieModal">
+      <div class="movie-info-card">
+        <span class="close-modal" onclick="kinopoiskAPI.closeModal()">×</span>
+
+        <div class="movie-content-wrapper">
+          <div class="movie-poster-col">
+            <img id="modalPoster" src="" alt="Poster" class="full-poster" />
+            <div class="modal-rating" id="modalRating">0.0</div>
+          </div>
+
+          <div class="movie-info-col">
+            <h2 id="modalTitle" class="movie-big-title">TITLE</h2>
+            <div id="modalYear" class="movie-meta">YEAR</div>
+
+            <div class="movie-desc-box">
+              <p id="modalDesc">...</p>
+            </div>
+
+            <div id="seasonsContainer" class="info-section"></div>
+            <div id="factsContainer" class="info-section"></div>
+
+            <div class="player-wrapper">
+              <div class="player-label" id="playerLabel">VIDEO UPLINK</div>
+              <iframe
+                id="modalPlayer"
+                src=""
+                frameborder="0"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+              ></iframe>
+            </div>
+
+            <div id="similarsContainer" class="info-section"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>

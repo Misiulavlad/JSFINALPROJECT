@@ -386,3 +386,85 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('moviesGrid')) loadCatalog();
   if (window.location.pathname.includes('history.html')) historyManager.renderHistory();
 });
+
+ 
+
+let boomPlayer = null;
+let boomApiLoaded = false;
+let boomTimeout = null;
+
+function loadYouTubeAPI() {
+  if (boomApiLoaded || window.YT) return;
+
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.body.appendChild(tag);
+
+  boomApiLoaded = true;
+}
+
+function openBoomVideo(event) {
+  event.preventDefault();
+
+  const modal = document.getElementById('boomPlayerModal');
+  if (!modal) return;
+
+  modal.classList.add('active');
+
+  if (modal.requestFullscreen) {
+    modal.requestFullscreen().catch(() => {});
+  } else if (modal.webkitRequestFullscreen) {
+    modal.webkitRequestFullscreen();
+  } else if (modal.msRequestFullscreen) {
+    modal.msRequestFullscreen();
+  }
+
+  if (boomPlayer && typeof boomPlayer.playVideo === 'function') {
+    boomPlayer.seekTo(0);
+    boomPlayer.playVideo();
+  } else {
+    loadYouTubeAPI();
+  }
+
+  clearTimeout(boomTimeout);
+  boomTimeout = setTimeout(() => {
+    closeBoomVideo();
+  }, 2600);
+}
+
+function closeBoomVideo() {
+  const modal = document.getElementById('boomPlayerModal');
+  if (!modal) return;
+
+  modal.classList.remove('active');
+  clearTimeout(boomTimeout);
+
+  if (boomPlayer && typeof boomPlayer.stopVideo === 'function') {
+    boomPlayer.stopVideo();
+  }
+
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+function onYouTubeIframeAPIReady() {
+  boomPlayer = new YT.Player('boomYoutubePlayer', {
+    videoId: 'q-X9LN4lSQg',
+    playerVars: {
+      autoplay: 1,
+      controls: 1,
+      rel: 0,
+      modestbranding: 1
+    },
+    events: {
+      onReady: (event) => {
+        event.target.playVideo();
+      }
+    }
+  });
+}
+
+window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+window.openBoomVideo = openBoomVideo;
+window.closeBoomVideo = closeBoomVideo;
