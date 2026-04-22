@@ -265,11 +265,6 @@
   position: relative;
 }
 
-.full-poster {
-  width: 100%;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
 
 .modal-rating {
   position: absolute;
@@ -283,10 +278,6 @@
   font-family: "Orbitron", sans-serif;
 }
 
-.movie-info-col {
-  flex: 1;
-  width: 100%;
-}
 
 .movie-big-title {
   font-family: "Orbitron", sans-serif;
@@ -418,10 +409,6 @@
   transition: 0.2s;
 }
 
-.fact-item:hover {
-  background: rgba(var(--glow-color), 0.1);
-}
-
 .similars-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -473,12 +460,14 @@
   white-space: nowrap;
 }
 
+/* взрыв */
+
 .boom {
   border-radius: 100%;
   height: 70px;
   width: 70px;
   margin: 10px;
-  background-image: url("https://img.freepik.com/free-psd/fiery-explosion-dramatic-visual-intense-combustion-debris_191095-81825.jpg?semt=ais_hybrid&w=740&q=80");
+  background-image: url("https://www.pnp.ru//upload/entities/2022/02/19/01/article/detailPicture/c3/1a/b9/5e/36e42603cba359f3af18056575b42203.jpg");
   background-size: cover;
   background-position: center;
   color: black;

@@ -15,7 +15,6 @@
   --glow-color: 255, 0, 60;
   --accent-color: #ff003c;
   --card-border: rgba(255, 0, 60, 0.4);
-  --blob-gradient: radial-gradient(circle, rgba(255,0,60,0.4) 0%, rgba(255,0,60,0) 70%);
 
   --text-main: #ffffff;
   --text-muted: rgba(255,255,255,0.6);
@@ -47,13 +46,6 @@ a {
 img {
   display: block;
   max-width: 100%;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
 }
 
 .main {

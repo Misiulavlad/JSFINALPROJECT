@@ -429,7 +429,7 @@ function openBoomVideo(event) {
   clearTimeout(boomTimeout);
   boomTimeout = setTimeout(() => {
     closeBoomVideo();
-  }, 2600);
+  }, 2450);
 }
 
 function closeBoomVideo() {

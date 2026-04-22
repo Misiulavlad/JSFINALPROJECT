@@ -7,7 +7,7 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
-  <script>
+<script>
     (() => {
       const themes = {
         red:{glow:'255,0,60',accent:'#ff003c'}, blue:{glow:'0,102,255',accent:'#0066ff'},
@@ -23,7 +23,6 @@
       root.style.setProperty('--glow-color', t.glow);
       root.style.setProperty('--accent-color', t.accent);
       root.style.setProperty('--card-border', `rgba(${t.glow},0.4)`);
-      root.style.setProperty('--blob-gradient', `radial-gradient(circle, rgba(${t.glow},0.4) 0%, rgba(${t.glow},0) 70%)`);
     })();
   </script>
 
@@ -34,10 +33,6 @@
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-  <div class="blobs-container">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
 
   <nav class="navbar">
     <a class="nav-logo" href="index.html">CYBER<span>CINEMA</span></a>
