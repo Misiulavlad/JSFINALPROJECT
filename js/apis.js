@@ -3,6 +3,8 @@ import { t } from './lang.js';
 export const kinopoiskAPI = {
   key: '97902904-1707-4ced-9ece-d2c5a54c9421',
 
+
+  // поиск
   searchByKeyword: async (query) => {
     const url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=${encodeURIComponent(query)}`;
     const resultContainer = document.getElementById('apiResult');
@@ -30,6 +32,8 @@ export const kinopoiskAPI = {
     }
   },
 
+
+  // вывод результатов
   renderSearchResults: (data) => {
     const container = document.getElementById('apiResult');
     if (!container) return;
@@ -64,6 +68,8 @@ export const kinopoiskAPI = {
     container.innerHTML = html;
   },
 
+
+  // каталог
   loadCatalog: async () => {
     const grid = document.getElementById('moviesGrid');
     if (!grid) return;
@@ -107,6 +113,8 @@ export const kinopoiskAPI = {
     }
   },
 
+
+  // фильм
   openFilmModal: async (filmId) => {
     const modal = document.getElementById('movieModal');
     if (!modal) return;
@@ -205,6 +213,8 @@ export const kinopoiskAPI = {
     }
   },
 
+
+  // сезоны
   loadSeasons: async (filmId) => {
     const container = document.getElementById('seasonsContainer');
     if (!container) return;
@@ -238,6 +248,8 @@ export const kinopoiskAPI = {
     }
   },
 
+
+  // факты
   loadFacts: async (filmId) => {
     const container = document.getElementById('factsContainer');
     if (!container) return;
@@ -267,6 +279,8 @@ export const kinopoiskAPI = {
     }
   },
 
+
+  // похожие
   loadSimilars: async (filmId) => {
     const container = document.getElementById('similarsContainer');
     if (!container) return;
@@ -306,6 +320,8 @@ export const kinopoiskAPI = {
     }
   },
 
+
+  // плеер не работает:(
   playVideo: (url) => {
     const player = document.getElementById('modalPlayer');
     const controls = document.getElementById('videoControls');
@@ -316,6 +332,8 @@ export const kinopoiskAPI = {
     if (controls) controls.remove();
   },
 
+
+// закрытие окна
   closeModal: () => {
     const modal = document.getElementById('movieModal');
     if (!modal) return;
